@@ -46,6 +46,7 @@ interface SubmitQuizSuccessData {
     message: string;
     score?: number;
     quizSubmissionId?: number;
+    totalQuestions?: number;
 }
 
 
