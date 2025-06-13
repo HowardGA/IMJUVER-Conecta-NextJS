@@ -16,8 +16,6 @@ import {
 } from '@/services/courseServices';
 import { useRouter } from 'next/navigation';
 import {
-    CreateCourseFormData,
-    CreateLessonFormData,
     Quiz,
     QuizSubmissionPayload,
     QuizForTaking,
@@ -25,9 +23,6 @@ import {
     Category,     
     Lesson,       
     Modulos,      
-    // Assuming JSONContent is imported from '@tiptap/react' where CreateLessonFormData is defined
-    // If not, you might need to define a simple type for it or import it here too.
-    // type JSONContent = Record<string, any>; // Fallback if not globally available
 } from '@/services/courseServices';
 
 

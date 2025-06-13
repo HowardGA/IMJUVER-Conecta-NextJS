@@ -8,8 +8,6 @@ import {
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, UploadOutlined, SaveOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
 import { UploadFile } from 'antd/es/upload/interface';
-import { AxiosError } from 'axios'; // Import AxiosError for consistent error typing
-
 import { useGetCourseCategories, useCreateCourse } from '@/hooks/useCourses';
 import { CreateCourseFormData, ModuleFormData } from '@/services/courseServices';
 
@@ -59,13 +57,6 @@ const CreateCourseClient: React.FC = () => {
             });
             return;
         }
-
-        // You've already done this, which is good.
-        // const courseDataToSend: CreateCourseFormData = {
-        //     ...values,
-        //     portada: actualFile,
-        // };
-
         const formData = new FormData();
         formData.append('titulo', values.titulo); // Use values directly
         formData.append('descripcion', values.descripcion);
