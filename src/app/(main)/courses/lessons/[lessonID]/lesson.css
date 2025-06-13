@@ -1,0 +1,68 @@
+
+.youtube-player-responsive {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; 
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    background: black;
+}
+
+.youtube-player-responsive iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+.lesson-content-richtext p {
+    margin-bottom: 1em; 
+}
+
+.lesson-content-richtext h1,
+.lesson-content-richtext h2,
+.lesson-content-richtext h3,
+.lesson-content-richtext h4,
+.lesson-content-richtext h5,
+.lesson-content-richtext h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.2;
+}
+
+.lesson-content-richtext ul,
+.lesson-content-richtext ol {
+    margin-left: 20px;
+    margin-bottom: 1em;
+}
+
+.lesson-content-richtext img {
+    max-width: 100%;
+    height: auto;
+    display: block; 
+    margin: 1em 0;
+}
+
+.lesson-content-richtext a {
+    color: #1890ff; 
+    text-decoration: underline;
+}
+
+.lesson-content-richtext blockquote {
+    border-left: 4px solid #ccc;
+    margin: 1.5em 10px;
+    padding: 0.5em 10px;
+    font-style: italic;
+    color: #666;
+}
+
+.lesson-content-richtext pre {
+    background: #f0f0f0;
+    padding: 1em;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: monospace;
+}

@@ -1,0 +1,17 @@
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden; 
+}
+
+html {
+  background-color: var(--ant-color-bg-layout);
+}
+
+body {
+  background-color: var(--ant-color-bg-layout);
+  color: var(--ant-color-text-base);
+}
