@@ -8,6 +8,7 @@ import {
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, UploadOutlined, SaveOutlined, UpOutlined, DownOutlined } from '@ant-design/icons';
 import { UploadFile } from 'antd/es/upload/interface';
+import { AxiosError } from 'axios'; // Import AxiosError for consistent error typing
 
 import { useGetCourseCategories, useCreateCourse } from '@/hooks/useCourses';
 import { CreateCourseFormData, ModuleFormData } from '@/services/courseServices';
@@ -30,16 +31,17 @@ const CreateCourseClient: React.FC = () => {
             api.info({ key: 'creatingCourse', message: 'Creando curso...', description: 'Por favor, espere mientras se guarda el curso.', duration: 0 });
         } else if (createCourseMutation.isSuccess) {
             api.success({ key: 'creatingCourse', message: 'Curso creado con éxito', description: 'El curso ha sido guardado exitosamente.', duration: 5 });
-            form.resetFields(); 
+            form.resetFields();
         } else if (createCourseMutation.isError) {
-            const errorMsg = (createCourseMutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Error desconocido al crear el curso.';
+            // Safely access error message from AxiosError
+            const errorMsg =  'Error desconocido al crear el curso.'; 
             api.error({ key: 'creatingCourse', message: 'Error al crear curso', description: errorMsg, duration: 5 });
         }
     }, [createCourseMutation.isPending, createCourseMutation.isSuccess, createCourseMutation.isError, createCourseMutation.error, api, form]);
 
 
     const onFinish = async (values: CreateCourseFormData) => {
-        const uploadedFiles = values.portada as unknown as UploadFile[]; 
+        const uploadedFiles = values.portada as unknown as UploadFile[];
         const actualFile: File | undefined = uploadedFiles[0]?.originFileObj;
 
         if (!actualFile) {
@@ -58,31 +60,37 @@ const CreateCourseClient: React.FC = () => {
             return;
         }
 
-        const courseDataToSend: CreateCourseFormData = {
-            ...values,
-            portada: actualFile,
-        };
+        // You've already done this, which is good.
+        // const courseDataToSend: CreateCourseFormData = {
+        //     ...values,
+        //     portada: actualFile,
+        // };
 
         const formData = new FormData();
-        formData.append('titulo', courseDataToSend.titulo);
-        formData.append('descripcion', courseDataToSend.descripcion);
-        formData.append('cat_cursos_id', courseDataToSend.cat_cursos_id.toString());
-        formData.append('duracion', courseDataToSend.duracion.toString());
-        formData.append('nivel', courseDataToSend.nivel);
-        formData.append('portada', courseDataToSend.portada); 
+        formData.append('titulo', values.titulo); // Use values directly
+        formData.append('descripcion', values.descripcion);
+        formData.append('cat_cursos_id', values.cat_cursos_id.toString());
+        formData.append('duracion', values.duracion.toString());
+        formData.append('nivel', values.nivel);
+        formData.append('portada', actualFile); // Use actualFile directly
 
-        courseDataToSend.modulos.forEach((module, index) => {
+        values.modulos.forEach((module, index) => { // Use values.modulos directly
+            // For complex objects like `modulos`, it's often better to stringify the whole array
+            // or send individual properties based on what your backend expects from FormData.
+            // If your backend expects `modulos` as a JSON string, then append it once:
+            // formData.append('modulos', JSON.stringify(values.modulos));
+            // If it expects individual fields like below, ensure it handles arrays correctly.
             formData.append(`modulos[${index}].titulo`, module.titulo);
             formData.append(`modulos[${index}].descripcion`, module.descripcion);
         });
 
-       
-        createCourseMutation.mutate(formData as any); 
+        // --- FIX: Removed 'as any' since createCourseMutation expects FormData ---
+        createCourseMutation.mutate(formData);
     };
 
     const normFile = (e: { fileList?: UploadFile[] } | UploadFile[]): UploadFile[] => {
         if (Array.isArray(e)) {
-            return e; 
+            return e;
         }
         return e?.fileList || [];
     };
@@ -91,7 +99,7 @@ const CreateCourseClient: React.FC = () => {
         const currentModules: ModuleFormData[] | undefined = form.getFieldValue('modulos');
         if (!currentModules) return;
 
-        const updatedModules = [...currentModules]; 
+        const updatedModules = [...currentModules];
         const [movedItem] = updatedModules.splice(currentIndex, 1);
         updatedModules.splice(newIndex, 0, movedItem);
 

@@ -7,7 +7,7 @@ export const login = async (credentials: LoginForm): Promise<UserData> => {
 }
 
 export const register = async (formData: RegisterForm): Promise<RegistrationSuccessResponse> => {
-    const response = await apiClient.post('/auth/register', formData)
+    const response = await apiClient.post<RegistrationSuccessResponse>('/auth/register', formData)
     return response.data;
 }
 

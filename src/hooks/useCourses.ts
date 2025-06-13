@@ -87,19 +87,9 @@ export const useGetCourseCategories = () => {
 export const useCreateCourse = () => {
     const router = useRouter();
 
-    return useMutation<CreateCourseSuccessData, AxiosError, CreateCourseFormData>({
-        mutationFn: async (courseData: CreateCourseFormData) => {
-            const formData = new FormData();
-            formData.append('titulo', courseData.titulo);
-            formData.append('descripcion', courseData.descripcion);
-            formData.append('cat_cursos_id', courseData.cat_cursos_id.toString());
-            formData.append('duracion', courseData.duracion.toString());
-            formData.append('nivel', courseData.nivel);
-            formData.append('portada', courseData.portada);
-            
-            formData.append('modulos', JSON.stringify(courseData.modulos));
-
-            const response = await createCourse(formData);
+    return useMutation<CreateCourseSuccessData, AxiosError, FormData>({
+        mutationFn: async (courseData: FormData) => {
+           const response = await createCourse(courseData); // createCourse expects FormData
             return response.data;
         },
         onSuccess: (data) => {
@@ -113,20 +103,9 @@ export const useCreateCourse = () => {
 
 export const useCreateLesson = (courseId: number) => {
     const router = useRouter();
-    return useMutation<CreateLessonSuccessData, AxiosError, CreateLessonFormData>({
-        mutationFn: async (lessonData: CreateLessonFormData) => {
-            const formData = new FormData();
-            formData.append('titulo', lessonData.titulo);
-            formData.append('contenido', JSON.stringify(lessonData.contenido));
-            formData.append('mod_id', lessonData.mod_id.toString());
-            formData.append('youtube_videos', JSON.stringify(lessonData.youtube_videos));
-
-            if (lessonData.archivos && lessonData.archivos.length > 0) {
-                lessonData.archivos.forEach((file) => {
-                    formData.append('archivos', file);
-                });
-            }
-            const response = await createLesson(formData);
+    return useMutation<CreateLessonSuccessData, AxiosError, FormData>({
+        mutationFn: async (lessonData: FormData) => {
+          const response = await createLesson(lessonData);
             return response.data;
         },
         onSuccess: (data) => {

@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import TiptapEditor from '@/components/tiptap/TiptapEditor';
-import { RcFile, UploadFile } from 'antd/es/upload/interface';
+import { UploadFile } from 'antd/es/upload/interface';
 
 import { useCreateLesson, useGetModulesByCourse } from '@/hooks/useCourses';
 import { CreateLessonFormData } from '@/services/courseServices';
@@ -99,7 +99,7 @@ const AddLessonClient: React.FC<AddLessonClientProps> = ({ courseId }) => {
         });
 
         console.log("Submitting FormData:", formData);
-        createLessonMutation.mutate(formData as any);
+        createLessonMutation.mutate(formData);
     };
 
     const normFile = (e: { fileList?: UploadFile[] } | UploadFile[]): UploadFile[] => {

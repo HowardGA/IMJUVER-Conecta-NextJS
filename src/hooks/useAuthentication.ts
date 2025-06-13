@@ -4,8 +4,12 @@ import { LoginForm, RegisterForm, UseEmailVerificationResult, UserData } from '@
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/components/providers/UserProvider';
 import { message } from "antd";
-import { AxiosError } from 'axios'; 
+import { AxiosError } from 'axios';
 
+export interface RegistrationSuccessResponse {
+    message: string;
+    status: 'success' | 'error';
+}
 
 export const useLogin = () => {
     const router = useRouter();
@@ -29,8 +33,7 @@ export const useLogin = () => {
 
 export const useRegister = () => {
     const router = useRouter();
-    const { setUser } = useUser(); 
-    return useMutation<any, AxiosError, RegisterForm>({ 
+    return useMutation<RegistrationSuccessResponse, AxiosError, RegisterForm>({ 
         mutationFn: async (FormData: RegisterForm) => {
             const responseData = await register(FormData);
             return responseData;
@@ -58,17 +61,17 @@ export const useEmailVerification = (token: string | undefined): UseEmailVerific
     },
     enabled: !!token,
     retry: (failureCount, err: AxiosError) => {
-      if (err?.response?.status === 400 || data?.status === 'success' || data?.status === 'expired') {
+     if (err?.response?.status === 400) {
         return false;
       }
-      return failureCount < 1;
+      return failureCount < 1; 
     },
     staleTime: Infinity,
   });
 
-  const isSuccess = data?.status === 'success';
-  const isExpired = data?.status === 'expired';
-  const errorMessage =  'Error desconocido al verificar el email.';
+  const isSuccess = data?.status === 'success'; 
+  const isExpired = isError && error?.response?.data === 'Token expirado';
+  const errorMessage =  error?.message || 'Error desconocido al verificar el email.';
 
   return {
     isLoading: isLoading && !isSuccess && !isError && !isExpired,
