@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { QueryObserverResult, RefetchOptions } from '@tanstack/react-query'; 
 import { fetchCurrentUser, logoutUser } from '@/services/authServices';
 import { UserData } from '@/interfaces/authInterface';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface UserContextType {
   user: UserData | null;

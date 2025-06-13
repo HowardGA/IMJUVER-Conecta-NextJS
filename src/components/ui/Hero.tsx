@@ -31,12 +31,12 @@ const Hero: React.FC<HeroProps> = ({title, subTitle, imageSrc, children}) => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 50 }, 
-    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 10 } }, 
+    visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 10 } }, 
   };
 
   const imageVariants = {
     hidden: { opacity: 0, x: 50 }, 
-    visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 100, damping: 10, delay: 0.6 } }, 
+    visible: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 100, damping: 10, delay: 0.6 } }, 
   };
   return (
     <Row style={{ background: 'var(--ant-color-primary)', alignItems: 'stretch', maxHeight: '30rem', overflow: 'hidden', position: 'relative' }} ref={ref}>

@@ -1,21 +1,20 @@
-import React, { ReactNode } from 'react';
 import type { Metadata } from 'next';
-import AppHeader from '@/components/ui/Header';
-import AntdLayoutClient from '@/components/common/AntdLayoutClient';
+import MainLayoutWrapper from './MainLayoutWrapper';
+import React, { ReactNode } from 'react';
 
 export const metadata: Metadata = {
   title: 'IMJUVER Conecta',
   description: 'Plataforma web de IMJUVER para conectar a los jovenes',
 };
 
-interface RootLayoutProps {
+interface MainRootLayoutProps { 
   children: ReactNode;
 }
 
-export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
+export default function MainRootLayout({ children }: Readonly<MainRootLayoutProps>) {
   return (
-    <AntdLayoutClient header={<AppHeader/>}>
-        {children}
-    </AntdLayoutClient>
+    <MainLayoutWrapper>
+      {children}
+    </MainLayoutWrapper>
   );
 }

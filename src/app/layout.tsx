@@ -1,3 +1,4 @@
+'use client'
 import React, { ReactNode } from 'react';
 import { Inter } from 'next/font/google';
 import StyledComponentsRegistry from '@/components/providers/AntdRegistry';
