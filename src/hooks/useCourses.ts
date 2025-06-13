@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios'; 
 import {
     getAllCourses,
     getSingleCourse,
@@ -12,35 +13,72 @@ import {
     createQuiz,
     getQuizById,
     submitQuizAnswers
-} from '@/services/courseServices'; 
+} from '@/services/courseServices';
 import { useRouter } from 'next/navigation';
-import { CreateCourseFormData, CreateLessonFormData, Quiz, QuizSubmissionPayload, QuizForTaking } from '@/services/courseServices';
+import {
+    CreateCourseFormData,
+    CreateLessonFormData,
+    Quiz,
+    QuizSubmissionPayload,
+    QuizForTaking,
+    Course,      
+    Category,     
+    Lesson,       
+    Modulos,      
+    // Assuming JSONContent is imported from '@tiptap/react' where CreateLessonFormData is defined
+    // If not, you might need to define a simple type for it or import it here too.
+    // type JSONContent = Record<string, any>; // Fallback if not globally available
+} from '@/services/courseServices';
+
+
+interface CreateCourseSuccessData {
+    message: string;
+    curso: Course; 
+}
+
+interface CreateLessonSuccessData {
+    message: string;
+    lesson: Lesson;
+}
+
+interface CreateQuizSuccessData {
+    message?: string; 
+    courseId: number; 
+    quizId: number; 
+}
+
+interface SubmitQuizSuccessData {
+    message: string;
+    score?: number;
+    quizSubmissionId?: number;
+}
+
 
 export const useGetCourses = () => {
-    return useQuery({
+    return useQuery<Course[], AxiosError>({
         queryKey: ['courses'],
         queryFn: () => getAllCourses(),
     });
 };
 
-export const useGetSingleCourse = (courseID:number) => {
-    return useQuery({
-        queryKey: ['singleCourse',courseID],
+export const useGetSingleCourse = (courseID: number) => {
+    return useQuery<Course, AxiosError>({ 
+        queryKey: ['singleCourse', courseID],
         queryFn: () => getSingleCourse(courseID),
         enabled: !!courseID && !isNaN(courseID),
     });
 };
 
-export const useGetLesson = (lessonID:number) => {
-    return useQuery({
-        queryKey: ['singleCourse',lessonID],
+export const useGetLesson = (lessonID: number) => {
+    return useQuery<Lesson, AxiosError>({
+        queryKey: ['singleCourse', lessonID],
         queryFn: () => getLesson(lessonID),
         enabled: !!lessonID && !isNaN(lessonID),
     });
 };
 
 export const useGetCourseCategories = () => {
-    return useQuery({
+    return useQuery<Category[], AxiosError>({
         queryKey: ['courseCategories'],
         queryFn: () => getCourseCategories(),
     });
@@ -49,7 +87,7 @@ export const useGetCourseCategories = () => {
 export const useCreateCourse = () => {
     const router = useRouter();
 
-    return useMutation<any, Error, CreateCourseFormData>({ 
+    return useMutation<CreateCourseSuccessData, AxiosError, CreateCourseFormData>({
         mutationFn: async (courseData: CreateCourseFormData) => {
             const formData = new FormData();
             formData.append('titulo', courseData.titulo);
@@ -58,15 +96,16 @@ export const useCreateCourse = () => {
             formData.append('duracion', courseData.duracion.toString());
             formData.append('nivel', courseData.nivel);
             formData.append('portada', courseData.portada);
+            
             formData.append('modulos', JSON.stringify(courseData.modulos));
 
-            const response = await createCourse(formData as any); 
+            const response = await createCourse(formData);
             return response.data;
         },
         onSuccess: (data) => {
             router.push(`/main/courses/${data.curso.curs_id}`);
         },
-        onError: (error: any) => {
+        onError: (error: AxiosError) => { 
             console.error('Error creating course:', error);
         },
     });
@@ -74,21 +113,16 @@ export const useCreateCourse = () => {
 
 export const useCreateLesson = (courseId: number) => {
     const router = useRouter();
-
-    return useMutation<any, Error, CreateLessonFormData>({
+    return useMutation<CreateLessonSuccessData, AxiosError, CreateLessonFormData>({
         mutationFn: async (lessonData: CreateLessonFormData) => {
-        const formData = new FormData();
+            const formData = new FormData();
             formData.append('titulo', lessonData.titulo);
-            formData.append('contenido', JSON.stringify(lessonData.contenido)); 
+            formData.append('contenido', JSON.stringify(lessonData.contenido));
             formData.append('mod_id', lessonData.mod_id.toString());
-            formData.append('youtube_videos', JSON.stringify(lessonData.youtube_videos)); 
+            formData.append('youtube_videos', JSON.stringify(lessonData.youtube_videos));
 
             if (lessonData.archivos && lessonData.archivos.length > 0) {
                 lessonData.archivos.forEach((file) => {
-                    console.log('Appending file:', file); // <--- ADD THIS
-                    if (!(file instanceof File)) {
-                        console.error('Non-File object found in archivos:', file);
-                    }
                     formData.append('archivos', file);
                 });
             }
@@ -96,14 +130,17 @@ export const useCreateLesson = (courseId: number) => {
             return response.data;
         },
         onSuccess: (data) => {
-            router.push(`/main/courses/${courseId}/lessons/${data.lesson.lec_id}`); 
+            router.push(`/main/courses/${courseId}/lessons/${data.lesson.lec_id}`);
         },
+        onError: (error: AxiosError) => {
+             console.error('Error creating lesson:', error);
+        }
     });
 };
 
-export const useGetModulesByCourse = (courseID:number) => {
-    return useQuery({
-        queryKey: ['modulesByCourse',courseID],
+export const useGetModulesByCourse = (courseID: number) => {
+    return useQuery<Modulos[], AxiosError>({
+        queryKey: ['modulesByCourse', courseID],
         queryFn: () => getModulesByCourse(courseID),
         enabled: !!courseID && !isNaN(courseID),
     });
@@ -111,38 +148,37 @@ export const useGetModulesByCourse = (courseID:number) => {
 
 export const useCreateQuiz = () => {
     const router = useRouter();
-    return useMutation<any, Error, Quiz>({ 
+    return useMutation<CreateQuizSuccessData, AxiosError, Quiz>({
         mutationFn: async (quizData: Quiz) => {
             const response = await createQuiz(quizData);
             return response.data;
         },
-         onSuccess: (data) => {
+        onSuccess: (data) => {
             router.push(`/main/courses/${data.courseId}`);
         },
+        onError: (error: AxiosError) => {
+            console.error('Error creating quiz:', error);
+        }
     })
 }
 
 export const useQuizDetails = (quizId: number) => {
-    return useQuery<QuizForTaking, Error>({
+    return useQuery<QuizForTaking, AxiosError>({
         queryKey: ['quizDetails', quizId],
         queryFn: () => getQuizById(quizId),
-        enabled: !!quizId, // Only fetch if quizId is available
+        enabled: !!quizId, 
     });
 };
 
 export const useSubmitQuiz = () => {
-    // You might want to invalidate the quiz details cache after submission
-    // Or navigate to a results page
-    return useMutation<any, Error, QuizSubmissionPayload>({ // `any` for response, refine later
+    return useMutation<SubmitQuizSuccessData, AxiosError, QuizSubmissionPayload>({
         mutationFn: (payload: QuizSubmissionPayload) => submitQuizAnswers(payload.quiz_id, payload),
         onSuccess: (data) => {
             console.log('Quiz submitted successfully!', data);
-            // Example: Redirect to a results page, or show a success message
-            // router.push(`/quiz/${data.quizId}/results`); // If you have a results page
+            // router.push(`/quiz/${data.quizSubmissionId}/results`); 
         },
-        onError: (error) => {
+        onError: (error: AxiosError) => {
             console.error('Error submitting quiz:', error);
-            // Show error message to user
         }
     });
 };

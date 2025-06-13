@@ -2,16 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Form, Input, Button, Select, Upload, Space, Typography, notification, Spin, Divider, Tag, App 
+    Form, Input, Button, Select, Upload, Space, Typography, notification, Spin, Divider, Tag, App
 } from 'antd';
 import {
     SaveOutlined, PlusOutlined, UploadOutlined, YoutubeOutlined,
 } from '@ant-design/icons';
-import { useRouter } from 'next/navigation'; 
-import TiptapEditor from '@/components/tiptap/TiptapEditor'; 
+import { useRouter } from 'next/navigation';
+import TiptapEditor from '@/components/tiptap/TiptapEditor';
+import { RcFile, UploadFile } from 'antd/es/upload/interface';
 
 import { useCreateLesson, useGetModulesByCourse } from '@/hooks/useCourses';
-import { CreateLessonFormData } from '@/services/courseServices'; 
+import { CreateLessonFormData } from '@/services/courseServices';
+import { JSONContent } from '@tiptap/react';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -32,54 +34,82 @@ const AddLessonClient: React.FC<AddLessonClientProps> = ({ courseId }) => {
     const [videoIds, setVideoIds] = useState<string[]>([]);
     const router = useRouter();
 
-    const [api, contextHolder] = notification.useNotification(); 
+    const [api, contextHolder] = notification.useNotification();
 
     const createLessonMutation = useCreateLesson(courseId);
     const { data: modules, isLoading: modulesLoading, isError: modulesError } = useGetModulesByCourse(courseId);
-    const [editorContent, setEditorContent] = useState<Record<string, any>>({});
-    // Effect to set initial module ID once modules are loaded
+    const [editorContent, setEditorContent] = useState<JSONContent | null>(null);
+
     useEffect(() => {
         if (modules && modules.length > 0 && !form.getFieldValue('mod_id')) {
             form.setFieldsValue({ mod_id: modules[0].mod_id });
         }
     }, [modules, form]);
 
+    useEffect(() => {
+        if (createLessonMutation.isPending) {
+            api.info({ key: 'creatingLesson', message: 'Creando lección...', description: 'Por favor, espere mientras se guarda la lección.', duration: 0 });
+        } else if (createLessonMutation.isSuccess) {
+            api.success({ key: 'creatingLesson', message: 'Lección creada con éxito', description: 'La lección ha sido guardada exitosamente.', duration: 5 });
+            form.resetFields();
+            setVideoIds([]);
+            setYoutubeInput('');
+            setEditorContent(null);
+            router.push(`/courses/${courseId}`);
+        } else if (createLessonMutation.isError) {
+            const errorMsg = (createLessonMutation.error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Error desconocido al crear la lección.';
+            api.error({ key: 'creatingLesson', message: 'Error al crear lección', description: errorMsg, duration: 5 });
+        }
+    }, [createLessonMutation.isPending, createLessonMutation.isSuccess, createLessonMutation.isError, createLessonMutation.error, api, form, router, courseId]);
+
+
     const handleAddYouTubeVideo = () => {
         const id = getYouTubeId(youtubeInput);
         if (id && !videoIds.includes(id)) {
             setVideoIds(prev => [...prev, id]);
             setYoutubeInput('');
-            api.info({ message: 'Video Añadido', description: `Video ID: ${id}` }); // <--- Use api.info
+            api.info({ message: 'Video Añadido', description: `Video ID: ${id}` });
         } else if (id && videoIds.includes(id)) {
-            api.warning({ message: 'Video Repetido', description: 'Este video ya ha sido añadido.' }); // <--- Use api.warning
+            api.warning({ message: 'Video Repetido', description: 'Este video ya ha sido añadido.' });
         } else {
-            api.error({ message: 'URL Inválida', description: 'Por favor, ingrese una URL de YouTube válida.' }); // <--- Use api.error
+            api.error({ message: 'URL Inválida', description: 'Por favor, ingrese una URL de YouTube válida.' });
         }
     };
 
     const handleRemoveYouTubeVideo = (idToRemove: string) => {
         setVideoIds(prev => prev.filter(id => id !== idToRemove));
-        api.info({ message: 'Video Eliminado', description: `Video ID: ${idToRemove}` }); // <--- Use api.info
+        api.info({ message: 'Video Eliminado', description: `Video ID: ${idToRemove}` });
     };
 
     const onFinish = async (values: CreateLessonFormData) => {
-        const actualFiles = values.archivos ? values.archivos.map((file: any) => file.originFileObj || file) : [];
+        const actualFiles: File[] = values.archivos
+            ? ((values.archivos as unknown) as UploadFile[]).map((file: UploadFile) => file.originFileObj as File)
+            : [];
 
-        const lessonData: CreateLessonFormData = {
-            ...values,
-            contenido: editorContent,
-            youtube_videos: videoIds,
-            archivos: actualFiles,
-        };
-        createLessonMutation.mutate(lessonData);
+        const formData = new FormData();
+        formData.append('titulo', values.titulo);
+        formData.append('mod_id', values.mod_id.toString());
+        formData.append('contenido', JSON.stringify(editorContent)); 
+        formData.append('youtube_videos', JSON.stringify(videoIds));
+
+        actualFiles.forEach((file) => {
+            if (file) {
+                formData.append('archivos', file); 
+            }
+        });
+
+        console.log("Submitting FormData:", formData);
+        createLessonMutation.mutate(formData as any);
     };
 
-    const normFile = (e: any) => {
+    const normFile = (e: { fileList?: UploadFile[] } | UploadFile[]): UploadFile[] => {
         if (Array.isArray(e)) {
             return e;
         }
-        return e?.fileList;
+        
+        return e?.fileList || [];
     };
+
 
     if (modulesLoading) {
         return <div style={{ textAlign: 'center', padding: '50px' }}><Spin size="large" /><Text>Cargando módulos...</Text></div>;
@@ -102,16 +132,20 @@ const AddLessonClient: React.FC<AddLessonClientProps> = ({ courseId }) => {
     }
 
     return (
-        <App> 
+        <App>
             {contextHolder}
             <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>
                 <Title level={2} style={{ marginBottom: '30px', textAlign: 'center' }}>Agregar Nueva Lección</Title>
-             
+
                 <Form
                     form={form}
                     layout="vertical"
                     onFinish={onFinish}
-                    // initialValues handled by useEffect
+                    initialValues={{ 
+                        contenido: { type: 'doc', content: [] },
+                        youtube_videos: [],
+                        archivos: [], 
+                    }}
                     scrollToFirstError
                 >
                     <Form.Item
@@ -137,10 +171,10 @@ const AddLessonClient: React.FC<AddLessonClientProps> = ({ courseId }) => {
                     </Form.Item>
 
                     <Divider orientation="left">Contenido de la Lección (Texto)</Divider>
-                    <Form.Item label="Editor de Contenido" name="contenido">
+                    <Form.Item label="Editor de Contenido">
                          <TiptapEditor
-                            initialContent={form.getFieldValue('contenido')}
-                            onChange={setEditorContent} 
+                            initialContent={form.getFieldValue('contenido') || { type: 'doc', content: [] }} // Provide a default if form field is empty
+                            onChange={setEditorContent}
                         />
                     </Form.Item>
 
@@ -179,15 +213,15 @@ const AddLessonClient: React.FC<AddLessonClientProps> = ({ courseId }) => {
 
                     <Divider orientation="left">Archivos Adjuntos</Divider>
                     <Form.Item
-                        name="archivos"
+                        name="archivos" 
                         label="Subir Archivos (PDF, PPT, Excel, etc.)"
                         valuePropName="fileList"
-                        getValueFromEvent={normFile}
+                        getValueFromEvent={normFile} 
                     >
                         <Upload
-                            name="archivos"
+                            name="archivos" 
                             multiple={true}
-                            beforeUpload={() => false}
+                            beforeUpload={() => false} 
                             accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar"
                             listType="text"
                         >

@@ -1,6 +1,8 @@
-'use client'
+'use client';
 import React from 'react';
 import { Form, Radio, Checkbox, Space, Typography } from 'antd';
+import type { RadioChangeEvent } from 'antd/es/radio';
+
 import { QuizQuestionForTaking } from '@/services/courseServices';
 
 const { Title } = Typography;
@@ -18,12 +20,13 @@ const QuizQuestionTaking: React.FC<QuizQuestionTakingProps> = ({
     onAnswerChange,
     currentSelectedAnswerIds,
 }) => {
-    const handleRadioChange = (e: any) => { 
-        onAnswerChange(question.pregunta_id, [e.target.value]);
+    const handleRadioChange = (e: RadioChangeEvent) => {
+        onAnswerChange(question.pregunta_id, [e.target.value as number]);
     };
 
-    const handleCheckboxChange = (checkedValues: any[]) => {
-        onAnswerChange(question.pregunta_id, checkedValues as number[]);
+    // --- FIX HERE: Define the type for checkedValues directly ---
+    const handleCheckboxChange = (checkedValues: number[]) => {
+        onAnswerChange(question.pregunta_id, checkedValues);
     };
 
     const isTrueFalse = question.tipo_pregunta === 'TRUE_FALSE';
@@ -37,7 +40,7 @@ const QuizQuestionTaking: React.FC<QuizQuestionTakingProps> = ({
             >
                 {question.tipo_pregunta === 'SINGLE_CHOICE' && (
                     <Radio.Group
-                        value={currentSelectedAnswerIds[0] || null}
+                        value={currentSelectedAnswerIds[0] ?? null}
                         onChange={handleRadioChange}
                     >
                         <Space direction="vertical">
@@ -52,11 +55,10 @@ const QuizQuestionTaking: React.FC<QuizQuestionTakingProps> = ({
 
                 {isTrueFalse && (
                     <Radio.Group
-                        value={currentSelectedAnswerIds[0] || null}
+                        value={currentSelectedAnswerIds[0] ?? null}
                         onChange={handleRadioChange}
                     >
                         <Space direction="vertical">
-                            
                             <Radio value={question.respuestas[0]?.respuesta_id}>Verdadero</Radio>
                             <Radio value={question.respuestas[1]?.respuesta_id}>Falso</Radio>
                         </Space>

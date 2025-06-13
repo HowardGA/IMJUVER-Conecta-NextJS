@@ -1,15 +1,17 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { login, register, verifyEmail } from '@/services/authServices';
-import { LoginForm, RegisterForm, UseEmailVerificationResult } from '@/interfaces/authInterface';
+import { LoginForm, RegisterForm, UseEmailVerificationResult, UserData } from '@/interfaces/authInterface';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/components/providers/UserProvider';
 import { message } from "antd";
+import { AxiosError } from 'axios'; 
+
 
 export const useLogin = () => {
     const router = useRouter();
-    const {setUser} =  useUser();
+    const { setUser } = useUser();
 
-    return useMutation({
+    return useMutation<UserData, AxiosError, LoginForm>({ 
         mutationFn: async (credentials: LoginForm) => {
             const userData = await login(credentials);
             return userData;
@@ -17,50 +19,46 @@ export const useLogin = () => {
         onSuccess: (data) => {
             setUser(data);
             router.push('/courses');
-
         },
-          onError: (error) => {
+        onError: (error) => {
             console.error('Login failed:', error);
-          }
+            message.error( 'Error de inicio de sesión. Inténtelo de nuevo.');
+        }
     })
 }
 
 export const useRegister = () => {
     const router = useRouter();
-    const {setUser} = useUser();
-
-    return useMutation({
+    const { setUser } = useUser(); 
+    return useMutation<any, AxiosError, RegisterForm>({ 
         mutationFn: async (FormData: RegisterForm) => {
             const responseData = await register(FormData);
             return responseData;
         },
-         onSuccess: (data) => {
+        onSuccess: (data) => {
             message.success(data.message);
             router.push('/registration-pending-verification');
-
         },
-          onError: (error) => {
+        onError: (error) => {
             console.error('Registration failed:', error);
-            const backendErrorMessage = 'Error en el registro. Inténtelo de nuevo.';
-            message.error(backendErrorMessage); 
-          }
+            const backendErrorMessage =  'Error en el registro. Inténtelo de nuevo.';
+            message.error(backendErrorMessage);
+        }
     })
 }
 
-
-
 export const useEmailVerification = (token: string | undefined): UseEmailVerificationResult => {
-  const { data, isLoading, isError, refetch, error } = useQuery({
+  const { data, isLoading, isError, refetch, error } = useQuery<{ status: string; message: string; }, AxiosError>({
     queryKey: ['emailVerification', token],
-    queryFn: () => {
+    queryFn: async () => { 
       if (!token) {
-        return Promise.reject(new Error('No se ha proporcionado un token de verificación.'));
+        throw new Error('No se ha proporcionado un token de verificación.');
       }
       return verifyEmail(token);
     },
     enabled: !!token,
-    retry: (failureCount, err: any) => {
-      if (err?.response?.status === 400 || err?.response?.data?.status === 'success' || err?.response?.data?.status === 'expired') {
+    retry: (failureCount, err: AxiosError) => {
+      if (err?.response?.status === 400 || data?.status === 'success' || data?.status === 'expired') {
         return false;
       }
       return failureCount < 1;
@@ -68,19 +66,16 @@ export const useEmailVerification = (token: string | undefined): UseEmailVerific
     staleTime: Infinity,
   });
 
-  const axiosError: any = error; 
-
   const isSuccess = data?.status === 'success';
-  const isExpired = axiosError?.response?.data?.status === 'expired'; 
-  const errorMessage = axiosError?.response?.data?.message || axiosError?.message || 'Error desconocido al verificar el email.';
+  const isExpired = data?.status === 'expired';
+  const errorMessage =  'Error desconocido al verificar el email.';
 
   return {
-    isLoading: isLoading && !isSuccess && !isError && !isExpired, 
+    isLoading: isLoading && !isSuccess && !isError && !isExpired,
     isSuccess,
     isError: isError && !isSuccess && !isExpired,
     isExpired,
-    message: isSuccess ? data.message : (isExpired ? errorMessage : (isLoading ? 'Confirmando su correo electrónico...' : errorMessage)),
+    message: isSuccess ? data?.message || '' : (isExpired ? errorMessage : (isLoading ? 'Confirmando su correo electrónico...' : errorMessage)), // Added null checks for data?.message
     refetch: refetch,
   };
 };
-

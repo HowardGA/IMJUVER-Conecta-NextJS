@@ -1,18 +1,20 @@
-'use client'; 
+'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchCurrentUser, logoutUser } from '@/services/authServices'; 
-import { UserData } from '@/interfaces/authInterface'; 
+import type { QueryObserverResult, RefetchOptions } from '@tanstack/react-query'; 
+import { fetchCurrentUser, logoutUser } from '@/services/authServices';
+import { UserData } from '@/interfaces/authInterface';
 import { useRouter } from 'next/router';
 
 interface UserContextType {
   user: UserData | null;
   isLoadingUser: boolean;
   isLoggedIn: boolean;
-  refetchUser: () => Promise<any>;
+  // --- FIX HERE: Correctly type refetchUser ---
+  refetchUser: (options?: RefetchOptions) => Promise<QueryObserverResult<UserData, Error>>;
   logout: () => Promise<void>;
-  setUser: (userData: UserData | null) => void; 
+  setUser: (userData: UserData | null) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -26,11 +28,11 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUserState] = useState<UserData | null>(null);
   const router = useRouter();
 
-  const { data, isLoading, isError, refetch } = useQuery<UserData>({
+  const { data, isLoading, isError, refetch } = useQuery<UserData, Error>({ // Explicitly type error here too for consistency
     queryKey: ['currentUser'],
-    queryFn: fetchCurrentUser, 
-    staleTime: 1000 * 60 * 5, 
-    retry: false, 
+    queryFn: fetchCurrentUser,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     enabled: true,
@@ -56,21 +58,21 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const logout = useCallback(async () => {
     try {
       await logoutUser();
-      setUser(null); 
-      queryClient.removeQueries({ queryKey: ['currentUser'] }); 
-      queryClient.clear(); 
-      router.push('/'); 
+      setUser(null);
+      queryClient.removeQueries({ queryKey: ['currentUser'] });
+      queryClient.clear();
+      router.push('/');
     } catch (error) {
       console.error("Logout failed:", error);
     }
-  }, [queryClient, setUser]);
+  }, [queryClient, setUser, router]);
 
   const value = React.useMemo(
     () => ({
       user,
       isLoadingUser: isLoading,
       isLoggedIn: !!user,
-      refetchUser: refetch,
+      refetchUser: refetch, // This 'refetch' directly matches the type we defined
       logout,
       setUser,
     }),

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { ConfigProvider, theme as antdTheme } from 'antd';
+import { ConfigProvider } from 'antd';
 import { lightThemeTokens, darkThemeTokens, commonThemeConfig } from '@/styles/theme';
 
 interface ThemeContextType {

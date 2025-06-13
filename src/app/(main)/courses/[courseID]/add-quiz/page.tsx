@@ -63,7 +63,7 @@ const AddQuizClient: React.FC<AddQuizClientProps> = ({ params }) => {
             });
             form.resetFields(); 
         } else if (quizCreationError) {
-            const errorMsg = (quizCreationErrorMessage as any)?.response?.data?.message || 'Error desconocido al crear el cuestionario.';
+            const errorMsg = 'Error desconocido al crear el cuestionario.';
             messageApi.error({
                 key: 'creatingQuiz',
                 message: 'Error al crear cuestionario',

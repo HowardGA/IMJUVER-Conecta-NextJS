@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import {
     Form, Button, Space, Row, Col, Input, Checkbox, Radio
 } from 'antd';
@@ -6,15 +6,19 @@ import { UpOutlined, DownOutlined, MinusCircleOutlined, PlusOutlined } from '@an
 import QuizToolbar from './QuizzToolbar';
 import type { RadioChangeEvent } from 'antd/es/radio';
 
+import { Quiz, Preguntas, Respuestas } from '@/services/courseServices'; 
+
 
 interface QuestionItemProps {
     name: number; 
-    index: number; 
+    index: number;
     remove: (index: number | number[]) => void;
     reorderQuestions: (currentIndex: number, newIndex: number) => void;
-    fieldsLength: number; 
-    form: any; 
+    fieldsLength: number;
+    form: import('antd/es/form/Form').FormInstance<Quiz>;
 }
+type QuestionType = 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'TRUE_FALSE';
+
 
 const QuestionItem: React.FC<QuestionItemProps> = ({
     name,
@@ -24,17 +28,17 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
     fieldsLength,
     form
 }) => {
-    const currentQuestionType = Form.useWatch(['preguntas', name, 'tipo_pregunta'], form);
-    const currentAnswers = Form.useWatch(['preguntas', name, 'respuestas'], form);
+    const currentQuestionType: QuestionType | undefined = Form.useWatch(['preguntas', name, 'tipo_pregunta'], form) as QuestionType | undefined;
+    const currentAnswers: Respuestas[] | undefined = Form.useWatch(['preguntas', name, 'respuestas'], form);
 
     useEffect(() => {
-        const currentQuestionAnswers = form.getFieldValue(['preguntas', name, 'respuestas']);
-        const currentQuestionTypeVal = form.getFieldValue(['preguntas', name, 'tipo_pregunta']);
+        const currentQuestionAnswers: Respuestas[] | undefined = form.getFieldValue(['preguntas', name, 'respuestas']);
+        const currentQuestionTypeVal: QuestionType | undefined = form.getFieldValue(['preguntas', name, 'tipo_pregunta']) as QuestionType | undefined;
 
         if (currentQuestionTypeVal && (!currentQuestionAnswers || currentQuestionAnswers.length === 0)) {
             if (currentQuestionTypeVal === 'TRUE_FALSE') {
                 form.setFieldsValue({
-                    preguntas: form.getFieldValue('preguntas').map((q: any, qIndex: number) =>
+                    preguntas: form.getFieldValue('preguntas')?.map((q: Preguntas, qIndex: number) =>
                         qIndex === name
                             ? { ...q, respuestas: [{ texto_respuesta: 'Verdadero', correcta: false }, { texto_respuesta: 'Falso', correcta: false }] }
                             : q
@@ -42,7 +46,7 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
                 });
             } else if (currentQuestionTypeVal === 'SINGLE_CHOICE' || currentQuestionTypeVal === 'MULTIPLE_CHOICE') {
                 form.setFieldsValue({
-                    preguntas: form.getFieldValue('preguntas').map((q: any, qIndex: number) =>
+                    preguntas: form.getFieldValue('preguntas')?.map((q: Preguntas, qIndex: number) =>
                         qIndex === name
                             ? { ...q, respuestas: [{ texto_respuesta: '', correcta: false }] }
                             : q
@@ -50,12 +54,15 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
                 });
             }
         }
-    }, [name, currentQuestionType, form]);
-   
+    }, [name, currentQuestionType, form]); 
+
     const onSelectedQuestionTypeForThisQuestion = (e: RadioChangeEvent) => {
-        const updatedQuestions = form.getFieldValue('preguntas');
-        if (updatedQuestions && updatedQuestions[name]) {
-            updatedQuestions[name].tipo_pregunta = e.target.value;
+
+        const allQuestions: Preguntas[] | undefined = form.getFieldValue('preguntas');
+
+        if (allQuestions && allQuestions[name]) {
+            const updatedQuestions = [...allQuestions]; 
+            updatedQuestions[name].tipo_pregunta = e.target.value as QuestionType; 
 
             if (e.target.value === 'TRUE_FALSE') {
                 updatedQuestions[name].respuestas = [
@@ -63,13 +70,14 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
                     { texto_respuesta: 'Falso', correcta: false },
                 ];
             } else {
-                const currentAnswersForTypeChange = updatedQuestions[name].respuestas;
+                const currentAnswersForTypeChange: Respuestas[] | undefined = updatedQuestions[name].respuestas;
                 if (!currentAnswersForTypeChange || currentAnswersForTypeChange.length === 0) {
-                     updatedQuestions[name].respuestas = [{ texto_respuesta: '', correcta: false }];
+                    updatedQuestions[name].respuestas = [{ texto_respuesta: '', correcta: false }];
                 } else {
-                    updatedQuestions[name].respuestas = currentAnswersForTypeChange.map((ans: any) => ({
+
+                    updatedQuestions[name].respuestas = currentAnswersForTypeChange.map((ans: Respuestas) => ({
                         ...ans,
-                        correcta: false 
+                        correcta: false
                     }));
                 }
             }
@@ -78,22 +86,27 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
     };
 
     const handleSingleChoiceCorrectnessChange = (e: RadioChangeEvent) => {
-        const selectedAnswerIndex = e.target.value; 
-        const allQuestions = form.getFieldValue('preguntas');
-        const currentQuestion = allQuestions[name];
+        const selectedAnswerIndex = e.target.value as number; 
         
-        if (currentQuestion && currentQuestion.respuestas) {
-            const updatedAnswers = currentQuestion.respuestas.map((ans: any, idx: number) => ({
-                ...ans,
-                correcta: idx === selectedAnswerIndex 
-            }));
-            currentQuestion.respuestas = updatedAnswers;
-            form.setFieldsValue({ preguntas: allQuestions });
+        const allQuestions: Preguntas[] | undefined = form.getFieldValue('preguntas');
+
+        if (allQuestions && allQuestions[name]) {
+            const currentQuestion: Preguntas = allQuestions[name]; 
+
+            if (currentQuestion && currentQuestion.respuestas) {
+                
+                const updatedAnswers: Respuestas[] = currentQuestion.respuestas.map((ans: Respuestas, idx: number) => ({
+                    ...ans,
+                    correcta: idx === selectedAnswerIndex
+                }));
+                currentQuestion.respuestas = updatedAnswers;
+                form.setFieldsValue({ preguntas: allQuestions });
+            }
         }
     };
 
-    const correctOptionIndex = currentAnswers?.findIndex((ans: any) => ans.correcta === true);
-    const singleChoiceCorrectValue = currentAnswers?.findIndex((ans: any) => ans.correcta === true) ?? null;
+    const correctOptionIndex: number | undefined = currentAnswers?.findIndex((ans: Respuestas) => ans.correcta === true);
+    const singleChoiceCorrectValue: number | null = currentAnswers?.findIndex((ans: Respuestas) => ans.correcta === true) ?? null;
 
     return (
         <Space direction="vertical" style={{ width: '100%', border: '2px dashed var(--ant-color-primary )', padding: '16px', marginBottom: '16px', borderRadius: '4px', position: 'relative' }}>
@@ -150,63 +163,63 @@ const QuestionItem: React.FC<QuestionItemProps> = ({
                 <Form.List name={[name, 'respuestas']}>
                     {(answerFields, { add: addAnswer, remove: removeAnswer }) => (
                         <>
-                        {currentQuestionType === 'TRUE_FALSE' ? (
+                            {currentQuestionType === 'TRUE_FALSE' ? (
                                 <Radio.Group
                                     value={correctOptionIndex}
                                     onChange={handleSingleChoiceCorrectnessChange}
                                 >
-                                    <Radio value={0}>Verdadero</Radio> 
-                                    <Radio value={1}>Falso</Radio> 
+                                    <Radio value={0}>Verdadero</Radio>
+                                    <Radio value={1}>Falso</Radio>
                                 </Radio.Group>
                             ) : (
-                            <>
-                            {answerFields.map(({ key: answerKey, name: answerName, ...answerRestField }, answerIndex) => (
-                                <Space key={answerKey} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                                    <Form.Item
-                                        {...answerRestField}
-                                        name={[answerName, 'texto_respuesta']}
-                                        rules={[{ required: true, message: 'El texto de la opción es requerida' }]}
-                                        style={{ flexGrow: 1 }}
-                                    >
-                                        <Input placeholder={`Opción ${answerIndex + 1}`} />
-                                    </Form.Item>
-                                    {currentQuestionType === 'SINGLE_CHOICE' && (
-                                        <Form.Item noStyle>
-                                            <Radio.Group
-                                                value={singleChoiceCorrectValue} 
-                                                onChange={handleSingleChoiceCorrectnessChange}
+                                <>
+                                    {answerFields.map(({ key: answerKey, name: answerName, ...answerRestField }, answerIndex) => (
+                                        <Space key={answerKey} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                                            <Form.Item
+                                                {...answerRestField}
+                                                name={[answerName, 'texto_respuesta']}
+                                                rules={[{ required: true, message: 'El texto de la opción es requerida' }]}
+                                                style={{ flexGrow: 1 }}
                                             >
-                                                <Radio value={answerIndex} /> 
-                                            </Radio.Group>
-                                        </Form.Item>
-                                    )}
-                                    {currentQuestionType === 'MULTIPLE_CHOICE' && (
-                                         <Form.Item
-                                            {...answerRestField}
-                                            name={[answerName, 'correcta']}
-                                            valuePropName="checked"
-                                            noStyle 
-                                        >
-                                            <Checkbox/>
-                                        </Form.Item>
-                                    )}
-                                    {answerFields.length > 1 ? (
-                                        <MinusCircleOutlined 
-                                            onClick={() => removeAnswer(answerName)}
-                                            style={{ fontSize: '16px', color: '#ff4d4f', cursor: 'pointer' }}
-                                            />
-                                    ) : null}
-                                </Space>
-                            ))}
-                            <Form.Item>
-                                <Button type="dashed" onClick={() => addAnswer({ texto_respuesta: '', correcta: false })} block icon={<PlusOutlined />}>
-                                    Agregar Opción
-                                </Button>
-                            </Form.Item>
+                                                <Input placeholder={`Opción ${answerIndex + 1}`} />
+                                            </Form.Item>
+                                            {currentQuestionType === 'SINGLE_CHOICE' && (
+                                                <Form.Item noStyle>
+                                                    <Radio.Group
+                                                        value={singleChoiceCorrectValue}
+                                                        onChange={handleSingleChoiceCorrectnessChange}
+                                                    >
+                                                        <Radio value={answerIndex} />
+                                                    </Radio.Group>
+                                                </Form.Item>
+                                            )}
+                                            {currentQuestionType === 'MULTIPLE_CHOICE' && (
+                                                <Form.Item
+                                                    {...answerRestField}
+                                                    name={[answerName, 'correcta']}
+                                                    valuePropName="checked"
+                                                    noStyle
+                                                >
+                                                    <Checkbox/>
+                                                </Form.Item>
+                                            )}
+                                            {answerFields.length > 1 ? (
+                                                <MinusCircleOutlined
+                                                    onClick={() => removeAnswer(answerName)}
+                                                    style={{ fontSize: '16px', color: '#ff4d4f', cursor: 'pointer' }}
+                                                />
+                                            ) : null}
+                                        </Space>
+                                    ))}
+                                    <Form.Item>
+                                        <Button type="dashed" onClick={() => addAnswer({ texto_respuesta: '', correcta: false })} block icon={<PlusOutlined />}>
+                                            Agregar Opción
+                                        </Button>
+                                    </Form.Item>
+                                </>
+                            )}
                         </>
-                        )}
-                    </>
-                )}
+                    )}
                 </Form.List>
             </Form.Item>
         </Space>

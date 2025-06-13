@@ -1,6 +1,6 @@
-// components/Tiptap/TiptapEditor.tsx
 import React, { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import ImageExtension from '@tiptap/extension-image';
 import LinkExtension from '@tiptap/extension-link';
@@ -11,11 +11,11 @@ import BulletList from '@tiptap/extension-bullet-list';
 import OrderedList from '@tiptap/extension-ordered-list';
 import ListItem from '@tiptap/extension-list-item';
 
-import TiptapToolbar from './TiptapToolbar'; 
+import TiptapToolbar from './TiptapToolbar';
 
 interface TiptapEditorProps {
-    initialContent?: string | Record<string, any>; 
-    onChange: (content: Record<string, any>) => void; 
+    initialContent?: string | JSONContent;
+    onChange: (content: JSONContent) => void;
 }
 
 const TiptapEditor: React.FC<TiptapEditorProps> = ({ initialContent, onChange }) => {
@@ -24,11 +24,11 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ initialContent, onChange })
             StarterKit,
             ImageExtension.configure({
                 inline: true,
-                allowBase64: true, 
+                allowBase64: true,
             }),
             LinkExtension.configure({
-                openOnClick: true, 
-                autolink: true, 
+                openOnClick: true,
+                autolink: true,
             }),
             Heading.configure({ levels: [1, 2, 3, 4, 5, 6] }),
             Blockquote,
@@ -36,11 +36,11 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ initialContent, onChange })
             BulletList,
             OrderedList,
             ListItem,
-            
+
         ],
         content: initialContent || '<p></p>',
         onUpdate: ({ editor }) => {
-            onChange(editor.getJSON()); 
+            onChange(editor.getJSON());
         },
         editorProps: {
             attributes: {
@@ -49,10 +49,15 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ initialContent, onChange })
         },
     });
 
-    // Optional: Sync initialContent if it changes from parent
     useEffect(() => {
-        if (editor && initialContent && JSON.stringify(editor.getJSON()) !== JSON.stringify(initialContent)) {
-            editor.commands.setContent(initialContent);
+        if (editor && initialContent) {
+            const currentEditorContent = editor.getJSON();
+            const initialContentAsJSON = typeof initialContent === 'string'
+                ? { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: initialContent }] }] } // Simple conversion for string to JSONContent
+                : initialContent;
+            if (JSON.stringify(currentEditorContent) !== JSON.stringify(initialContentAsJSON)) {
+                editor.commands.setContent(initialContent);
+            }
         }
     }, [editor, initialContent]);
 

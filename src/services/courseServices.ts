@@ -1,4 +1,6 @@
 import apiClient from '../lib/apiClient';
+import { JSONContent } from '@tiptap/react'; 
+
 
 export interface Modulos {
     mod_id:number,
@@ -43,7 +45,7 @@ interface Portada {
     url: string
 }
 
-interface Category {
+export interface Category {
     cat_cursos_id: number,
     nombre: string,
     descripcion: string,
@@ -103,7 +105,7 @@ export interface ModuleFormData {
 
 export interface CreateLessonFormData {
     titulo: string;
-    contenido: Record<string, any>; 
+    contenido: JSONContent | null; 
     mod_id: number;
     youtube_videos: string[];
     archivos: File[]; 
@@ -136,7 +138,7 @@ export interface QuizSubmissionPayload {
     answers: UserSelectedAnswer[];
 }
 
-export const createCourse = (courseData: CreateCourseFormData) => { 
+export const createCourse = (courseData: FormData) => {
     return apiClient.post('/course', courseData, {
         headers: {
             'Content-Type': 'multipart/form-data',
