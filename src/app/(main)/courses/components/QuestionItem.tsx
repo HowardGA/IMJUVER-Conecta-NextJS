@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {
-    Form, Button, Space, Row, Col, Input, Checkbox, Radio, RadioGroupProps
+    Form, Button, Space, Row, Col, Input, Checkbox, Radio
 } from 'antd';
 import { UpOutlined, DownOutlined, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import QuizToolbar from './QuizzToolbar';

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Layout, Card, Typography, Spin, Button, Result, Space } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
@@ -10,7 +10,7 @@ import Link from 'next/link';
 import { useEmailVerification } from '@/hooks/useAuthentication';
 import { resendVerificationEmail } from '@/services/authServices';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 interface EmailConfirmationPageProps {
   params: {
@@ -68,9 +68,9 @@ const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({ params })
       } else {
         message.error({ content: response.message, key: 'resend', duration: 5 });
       }
-    } catch (err: any) {
-      console.error('Resend failed:', err);
-      message.error({ content: err.response?.data?.message || 'Error al reenviar el enlace.', key: 'resend', duration: 5 });
+    } catch (error) {
+      console.error('Resend failed:', error);
+      message.error({ content: 'Error al reenviar el enlace.', key: 'resend', duration: 5 });
     }
   };
 

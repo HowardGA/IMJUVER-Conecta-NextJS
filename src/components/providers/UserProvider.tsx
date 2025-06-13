@@ -24,6 +24,7 @@ interface UserProviderProps {
 export const UserProvider = ({ children }: UserProviderProps) => {
   const queryClient = useQueryClient();
   const [user, setUserState] = useState<UserData | null>(null);
+  const router = useRouter();
 
   const { data, isLoading, isError, refetch } = useQuery<UserData>({
     queryKey: ['currentUser'],
@@ -53,7 +54,6 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   }, [queryClient]);
 
   const logout = useCallback(async () => {
-    const router = useRouter();
     try {
       await logoutUser();
       setUser(null); 

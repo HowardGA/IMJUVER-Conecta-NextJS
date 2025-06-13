@@ -15,7 +15,7 @@ type CategorySelectOption = {
 };
 
 const CourseToolbar: React.FC<CourseToolbarProps> = ({onSearch, onCategoryChange, onAddCourse}) => {
-    const {data: categories, isLoading, isError, error} = useGetCourseCategories();
+    const {data: categories, isLoading} = useGetCourseCategories();
     const [searchText, setSearchText] = useState('');
 
     const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

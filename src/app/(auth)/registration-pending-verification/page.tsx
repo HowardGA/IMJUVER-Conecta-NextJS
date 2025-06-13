@@ -38,9 +38,9 @@ const [messageApi, contextHolder] = message.useMessage();
       } else {
         messageApi.error({ content: response.message, key: 'resend', duration: 5 });
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Resend failed:', err);
-      messageApi.error({ content: err.response?.data?.message || 'Error al reenviar el enlace.', key: 'resend', duration: 5 });
+      messageApi.error({ content: 'Error al reenviar el enlace.', key: 'resend', duration: 5 });
     }
   };
 

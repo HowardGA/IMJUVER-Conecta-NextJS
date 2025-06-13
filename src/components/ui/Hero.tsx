@@ -1,7 +1,6 @@
 'use client';
 
-import { Typography, Col, Row, Button, Space } from "antd";
-import StudenImg from '../../../public/hero-student.png';
+import { Typography, Col, Row, Space } from "antd";
 import Image,{ StaticImageData } from 'next/image';
 import '@/styles/Hero.css';
 import { motion, useInView } from 'framer-motion';

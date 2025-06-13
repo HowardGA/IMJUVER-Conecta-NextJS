@@ -5,7 +5,7 @@ import {
     Form, Input, Button, Select, Upload, Space, Typography, notification, Spin, Divider, Tag, App 
 } from 'antd';
 import {
-    SaveOutlined, PlusOutlined, MinusCircleOutlined, UploadOutlined, YoutubeOutlined,
+    SaveOutlined, PlusOutlined, UploadOutlined, YoutubeOutlined,
 } from '@ant-design/icons';
 import { useRouter } from 'next/navigation'; 
 import TiptapEditor from '@/components/tiptap/TiptapEditor'; 

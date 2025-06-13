@@ -1,5 +1,5 @@
 // src/styles/theme.ts
-import { theme as antdTheme, ThemeConfig } from 'antd';
+import { ThemeConfig } from 'antd';
 import { AliasToken } from 'antd/es/theme/interface';
 
 

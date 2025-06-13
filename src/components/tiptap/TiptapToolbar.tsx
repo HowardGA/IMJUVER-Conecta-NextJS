@@ -1,11 +1,11 @@
 // components/Tiptap/TiptapToolbar.tsx
 import React from 'react';
 import { Editor } from '@tiptap/react';
-import { Button, Space, Tooltip, Row} from 'antd';
+import { Button, Space, Tooltip} from 'antd';
 import {
-    BoldOutlined, ItalicOutlined, StrikethroughOutlined, CodeOutlined, LinkOutlined,
+    BoldOutlined, ItalicOutlined, StrikethroughOutlined, CodeOutlined,
     UnorderedListOutlined, OrderedListOutlined, BlockOutlined, ClearOutlined,
-    RedoOutlined, UndoOutlined, FormatPainterOutlined, PictureOutlined 
+    RedoOutlined, UndoOutlined, FormatPainterOutlined 
 } from '@ant-design/icons';
 import { BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4, BsTypeH5, BsTypeH6 } from "react-icons/bs";
 import { GrBlockQuote } from "react-icons/gr";

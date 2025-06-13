@@ -42,17 +42,16 @@ const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     });
   };
 
-  const algorithm = currentTheme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm;
   const customTokens = currentTheme === 'dark' ? darkThemeTokens : lightThemeTokens;
 
   return (
     <ThemeContext.Provider value={{ currentTheme, toggleTheme }}>
       <ConfigProvider
-        // --- Add this key prop ---
-        key={currentTheme} // Forces ConfigProvider to re-mount when theme changes
+      
+        key={currentTheme}
         theme={{
           ...commonThemeConfig,
-          cssVar: true, // Keep this as it's needed for your CSS variables
+          cssVar: true, 
           token: {
             ...customTokens,
           },

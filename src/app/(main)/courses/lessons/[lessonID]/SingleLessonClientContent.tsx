@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useGetLesson } from "@/hooks/useCourses";
 import { Spin, Alert, Typography, Divider, List, Button, Space, Carousel, Tag } from 'antd';
 import {
@@ -18,7 +18,7 @@ import CodeBlock from '@tiptap/extension-code-block';
 import BulletList from '@tiptap/extension-bullet-list'; 
 import OrderedList from '@tiptap/extension-ordered-list'; 
 import ListItem from '@tiptap/extension-list-item';
-import { Lesson, Video, Archivo } from "@/services/courseServices";
+import { Video, Archivo } from "@/services/courseServices";
 import './lesson.css';
 
 const { Title, Paragraph, Text } = Typography;

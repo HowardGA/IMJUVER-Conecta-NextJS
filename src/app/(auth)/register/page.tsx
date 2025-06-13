@@ -1,5 +1,5 @@
 'use client';
-import { Layout, Card, Row, Col, Typography, Form, Input, Button, InputNumber, DatePicker, Select } from 'antd';
+import { Layout, Card, Row, Col, Typography, Form, Input, Button, DatePicker, Select } from 'antd';
 import React from 'react';
 import Logo from '../../../../public/logo.png'
 import Image from 'next/image';
@@ -10,7 +10,7 @@ const {Title, Text} = Typography;
 
 const Register: React.FC = () => {
     const [form] = Form.useForm<RegisterForm>();
-    const { mutate: registerUser, isPending, isError } = useRegister(); 
+    const { mutate: registerUser, isPending } = useRegister(); 
 
 
     const onFinish = (values: RegisterForm) => {

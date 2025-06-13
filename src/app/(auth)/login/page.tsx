@@ -10,7 +10,7 @@ const {Title, Text} = Typography;
 
 const Login: React.FC = () => {
     const [form] = Form.useForm<LoginForm>();
-    const { mutate: loginUser, isPending, isError, error } = useLogin(); 
+    const { mutate: loginUser, isPending } = useLogin(); 
 
 
     const onFinish = (values: LoginForm) => {

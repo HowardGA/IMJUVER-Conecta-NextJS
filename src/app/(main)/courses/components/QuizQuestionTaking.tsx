@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import { Form, Radio, Checkbox, Space, Typography } from 'antd';
-import { QuizQuestionForTaking, UserSelectedAnswer } from '@/services/courseServices';
+import { QuizQuestionForTaking } from '@/services/courseServices';
 
 const { Title } = Typography;
 

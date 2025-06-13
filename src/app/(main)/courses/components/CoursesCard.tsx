@@ -2,6 +2,7 @@
 import { Card, Col, Row, Space, Typography,Badge } from "antd";
 import { BookOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import React from 'react';
+import Image from "next/image";
 
 interface CoursesCardProps {
     title: string,
@@ -15,14 +16,14 @@ interface CoursesCardProps {
 
 const {Text} = Typography
 
-const CoursesCard: React.FC<CoursesCardProps> = ({title, lessonQty, time, courseID, imageUrl, level, category}) => {
+const CoursesCard: React.FC<CoursesCardProps> = ({title, lessonQty, time, imageUrl, level, category}) => {
     return(
         <Badge.Ribbon text={level} color="volcano">
             <Card
                 hoverable
                 style={{ width: 272 }}
                 cover={
-                    <img
+                    <Image
                         alt="course card image"
                         src={imageUrl}
                         style={{
