@@ -12,10 +12,12 @@ import { resendVerificationEmail } from '@/services/authServices';
 
 const { Text } = Typography;
 
+interface EmailConfirmationPageParams {
+  token: string;
+}
+
 interface EmailConfirmationPageProps {
-  params: {
-    token: string;
-  };
+  params: EmailConfirmationPageParams;
 }
 
 const EmailConfirmationPage: React.FC<EmailConfirmationPageProps> = ({ params }) => {
