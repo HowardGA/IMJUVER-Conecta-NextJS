@@ -10,6 +10,8 @@ import { PlusOutlined, MinusCircleOutlined, UploadOutlined, SaveOutlined, UpOutl
 import { UploadFile } from 'antd/es/upload/interface';
 import { useGetCourseCategories, useCreateCourse } from '@/hooks/useCourses';
 import { CreateCourseFormData, ModuleFormData } from '@/services/courseServices';
+import { useRouter } from 'next/navigation';
+
 
 
 const { Title, Text } = Typography;
@@ -20,8 +22,8 @@ const { TextArea } = Input;
 const CreateCourseClient: React.FC = () => {
     const [form] = Form.useForm<CreateCourseFormData>();
     const { data: categories, isLoading: categoriesLoading, isError: categoriesError } = useGetCourseCategories();
-
-    const createCourseMutation = useCreateCourse();
+    const router = useRouter();
+    const createCourseMutation = useCreateCourse(router);
     const [api, contextHolder] = notification.useNotification();
 
     useEffect(() => {

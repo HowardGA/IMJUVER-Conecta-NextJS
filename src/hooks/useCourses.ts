@@ -24,6 +24,7 @@ import {
     Lesson,       
     Modulos,      
 } from '@/services/courseServices';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 
 interface CreateCourseSuccessData {
@@ -80,16 +81,14 @@ export const useGetCourseCategories = () => {
     });
 };
 
-export const useCreateCourse = () => {
-    const router = useRouter();
-
+export const useCreateCourse = (routerInstance: AppRouterInstance) => {
     return useMutation<CreateCourseSuccessData, AxiosError, FormData>({
         mutationFn: async (courseData: FormData) => {
            const response = await createCourse(courseData); // createCourse expects FormData
             return response.data;
         },
         onSuccess: (data) => {
-            router.push(`/main/courses/${data.curso.curs_id}`);
+            routerInstance.push(`/main/courses/${data.curso.curs_id}`);
         },
         onError: (error: AxiosError) => { 
             console.error('Error creating course:', error);
