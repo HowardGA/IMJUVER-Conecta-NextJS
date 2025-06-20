@@ -3,12 +3,16 @@ import React, {useEffect} from "react";
 import Hero from "@/components/ui/Hero";
 import SingleCourseImg from '../../../../../public/single-course.png';
 import { useGetSingleCourse } from "@/hooks/useCourses";
-import { Spin, Alert, Typography, Row, Col, Space, Collapse, Tag, List, Button } from 'antd';
+import { Spin, Alert, Typography, Row, Col, Space, Collapse, Tag, List, Button, Popconfirm } from 'antd';
 import { BookOutlined, ClockCircleOutlined, TrophyOutlined, GoldOutlined,PlusOutlined } from '@ant-design/icons';
 import Image from 'next/image'; 
 import Link from 'next/link';
 import { ModuloContenido,Modulos } from "@/services/courseServices";
 import { useUser } from "@/components/providers/UserProvider";
+import { useCoursePercentage } from "@/hooks/useCourseProgress";
+import CourseStartButton from "../components/CourseStartButton";
+import { useDeleteCourse } from "@/hooks/useCoursesCrud";
+
 const { Title, Paragraph, Text } = Typography;
 const { Panel } = Collapse;
 
@@ -19,8 +23,9 @@ interface SingleCourseClientContentProps {
 
 const SingleCourseClientContent: React.FC<SingleCourseClientContentProps> = ({courseId}) => {
     const {data: course, isLoading, isError, error} = useGetSingleCourse(courseId);
+    const {data: coursePercentage, isLoading: isCoursePercentageLoafing} = useCoursePercentage(courseId);
+    const { mutate: deleteCourse, isPending:isDeletingPending } = useDeleteCourse();
     const {user} = useUser();
-
     console.log(user)
 
     useEffect(() => {
@@ -29,7 +34,7 @@ const SingleCourseClientContent: React.FC<SingleCourseClientContentProps> = ({co
         }
     }, [isError, error, courseId]);
 
-     if (isLoading) {
+     if (isLoading && isCoursePercentageLoafing) {
         return (
             <>
                 <Hero
@@ -150,7 +155,7 @@ const SingleCourseClientContent: React.FC<SingleCourseClientContentProps> = ({co
                  {(user?.rol_id === 1 )&&
                  <>
                         <Link
-                        href={`/main/courses/${courseId}/add-lesson`}
+                        href={`/courses/${courseId}/add-lesson`}
                         passHref
                         style={{ textDecoration: 'none', color: 'inherit' }} 
                     >
@@ -163,7 +168,7 @@ const SingleCourseClientContent: React.FC<SingleCourseClientContentProps> = ({co
                     </Link>
 
                     <Link
-                        href={`/main/courses/${courseId}/add-quiz`}
+                        href={`/courses/${courseId}/add-quiz`}
                         passHref
                         style={{ textDecoration: 'none', color: 'inherit' }} 
                     >
@@ -174,9 +179,21 @@ const SingleCourseClientContent: React.FC<SingleCourseClientContentProps> = ({co
                             </Row>
                         </Button>
                     </Link>
+
+                    <Popconfirm
+                        title="¿Estás seguro de que quieres eliminar este curso?"
+                        onConfirm={() => deleteCourse(courseId)}
+                        okText="Sí"
+                        cancelText="No"
+                    >
+                        <Button danger loading={isDeletingPending}>
+                            Eliminar Curso
+                        </Button>
+                    </Popconfirm>
                 </>
                 }
-
+             
+                <CourseStartButton courseId={course.curs_id} progressPercentage={coursePercentage} />
 
                 <Title level={3} style={{ marginTop: '20px', marginBottom: '10px' }}>Descripción del Curso</Title>
                 <Paragraph>{course.descripcion}</Paragraph>
@@ -200,9 +217,9 @@ const SingleCourseClientContent: React.FC<SingleCourseClientContentProps> = ({co
                                             dataSource={modulo.contenido.sort((a, b) => a.orden - b.orden)}
                                             renderItem={(item: ModuloContenido) => (
                                                 <List.Item>
-                                                    {item.tipo === 'Leccion' && item.leccion ? ( 
+                                                   {item.tipo === 'leccion' && item.leccion ? ( 
                                                     <Link
-                                                        href={`/main/courses/lessons/${item.leccion.lec_id}`}
+                                                        href={`/courses/lessons/${item.leccion.lec_id}`}
                                                         passHref
                                                         style={{ textDecoration: 'none', color: 'inherit' }}
                                                     >
@@ -210,7 +227,7 @@ const SingleCourseClientContent: React.FC<SingleCourseClientContentProps> = ({co
                                                     </Link>
                                                     ) : item.tipo === 'Cuestionario' && item.quiz ? ( 
                                                     <Link
-                                                        href={`/main/courses/quizzes/${item.quiz.quiz_id}`}
+                                                        href={`/courses/quizzes/${item.quiz.quiz_id}`}
                                                         passHref
                                                         style={{ textDecoration: 'none', color: 'inherit' }}
                                                     >

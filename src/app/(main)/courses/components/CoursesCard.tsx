@@ -26,6 +26,8 @@ const CoursesCard: React.FC<CoursesCardProps> = ({title, lessonQty, time, imageU
                     <Image
                         alt="course card image"
                         src={imageUrl}
+                        width={272}
+                        height={180}
                         style={{
                             height: '180px',  
                             objectFit: 'cover',

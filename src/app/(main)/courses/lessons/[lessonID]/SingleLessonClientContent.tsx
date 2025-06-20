@@ -20,6 +20,9 @@ import OrderedList from '@tiptap/extension-ordered-list';
 import ListItem from '@tiptap/extension-list-item';
 import { Video, Archivo } from "@/services/courseServices";
 import './lesson.css';
+import NextContentButton from "../../components/NextContentButton";
+import { useContenidoIdByType } from "@/hooks/useCourseProgress";
+
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -38,6 +41,7 @@ const getFileIcon = (fileType: string) => {
 
 const SingleLessonClientContent: React.FC<SingleLessonClientContentProps> = ({lessonID}) => {
     const {data: lesson, isLoading, isError, error} = useGetLesson(lessonID);
+    const { data } = useContenidoIdByType('Leccion', lessonID);
 
     const editor = useEditor({
         extensions: [
@@ -113,6 +117,9 @@ if (isLoading) {
     return (
         <div style={{ padding: '40px 20px', maxWidth: '900px', margin: '0 auto' }}>
             <Title level={2} style={{ marginBottom: '15px' }}>{lesson.titulo}</Title>
+            {data?.contenidoId && (
+                <NextContentButton currentContenidoId={data.contenidoId} contentId={lessonID}/>
+            )}
             {lesson.tipo && (
                 <Tag color="blue" style={{ marginBottom: '20px' }}>
                     {lesson.tipo}

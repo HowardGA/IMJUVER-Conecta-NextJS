@@ -11,7 +11,6 @@ interface UserContextType {
   user: UserData | null;
   isLoadingUser: boolean;
   isLoggedIn: boolean;
-  // --- FIX HERE: Correctly type refetchUser ---
   refetchUser: (options?: RefetchOptions) => Promise<QueryObserverResult<UserData, Error>>;
   logout: () => Promise<void>;
   setUser: (userData: UserData | null) => void;
@@ -28,7 +27,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUserState] = useState<UserData | null>(null);
   const router = useRouter();
 
-  const { data, isLoading, isError, refetch } = useQuery<UserData, Error>({ // Explicitly type error here too for consistency
+  const { data, isLoading, isError, refetch } = useQuery<UserData, Error>({ 
     queryKey: ['currentUser'],
     queryFn: fetchCurrentUser,
     staleTime: 1000 * 60 * 5,

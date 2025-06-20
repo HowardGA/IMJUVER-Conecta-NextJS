@@ -5,6 +5,8 @@ import { Button, Spin, Alert, Form, Result, Typography } from 'antd';
 import { useQuizDetails, useSubmitQuiz } from '@/hooks/useCourses'; 
 import QuizQuestionTaking from '../../components/QuizQuestionTaking'; 
 import { UserSelectedAnswer, QuizSubmissionPayload } from '@/services/courseServices'; 
+import NextContentButton from '../../components/NextContentButton';
+import { useContenidoIdByType } from '@/hooks/useCourseProgress';
 
 const { Title, Text } = Typography;
 
@@ -13,11 +15,8 @@ const QuizTakingPage: React.FC = () => {
     const params = useParams();
     const quizIdParam = params.quizID;
     const parsedQuizId = quizIdParam ? parseInt(quizIdParam as string) : 0;
-
-
-
+    const { data } = useContenidoIdByType('Cuestionario', parsedQuizId);
     const { data: quiz, isLoading, isError, error } = useQuizDetails(parsedQuizId);
-
     const [userAnswers, setUserAnswers] = useState<UserSelectedAnswer[]>([]);
 
     const submitQuizMutation = useSubmitQuiz();
@@ -116,6 +115,9 @@ const QuizTakingPage: React.FC = () => {
     return (
         <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px', border: '1px solid #eee', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
             <Title level={2}>{quiz.titulo}</Title>
+             {data?.contenidoId && (
+                <NextContentButton currentContenidoId={data.contenidoId} contentId={parsedQuizId} />
+            )}
             <Text type="secondary" style={{ marginBottom: '24px', display: 'block' }}>{quiz.descripcion}</Text>
 
             <Form layout="vertical">

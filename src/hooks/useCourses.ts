@@ -55,6 +55,7 @@ export const useGetCourses = () => {
     return useQuery<Course[], AxiosError>({
         queryKey: ['courses'],
         queryFn: () => getAllCourses(),
+        refetchOnWindowFocus: true,  
     });
 };
 
@@ -88,7 +89,7 @@ export const useCreateCourse = (routerInstance: AppRouterInstance) => {
             return response.data;
         },
         onSuccess: (data) => {
-            routerInstance.push(`/main/courses/${data.curso.curs_id}`);
+            routerInstance.push(`/courses/${data.curso.curs_id}`);
         },
         onError: (error: AxiosError) => { 
             console.error('Error creating course:', error);
@@ -104,7 +105,7 @@ export const useCreateLesson = (courseId: number) => {
             return response.data;
         },
         onSuccess: (data) => {
-            router.push(`/main/courses/${courseId}/lessons/${data.lesson.lec_id}`);
+            router.push(`/courses/${courseId}/lessons/${data.lesson.lec_id}`);
         },
         onError: (error: AxiosError) => {
              console.error('Error creating lesson:', error);
@@ -128,7 +129,7 @@ export const useCreateQuiz = () => {
             return response.data;
         },
         onSuccess: (data) => {
-            router.push(`/main/courses/${data.courseId}`);
+            router.push(`/courses/${data.courseId}`);
         },
         onError: (error: AxiosError) => {
             console.error('Error creating quiz:', error);
