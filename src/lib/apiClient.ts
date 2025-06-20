@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_API_URL || 'http://localhost:3001/api',
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_API_URL || 'https://imjuver-backend.onrender.com/api',
   timeout: 10000,
   withCredentials: true, 
   headers: {
