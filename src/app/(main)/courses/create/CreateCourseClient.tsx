@@ -60,24 +60,13 @@ const CreateCourseClient: React.FC = () => {
             return;
         }
         const formData = new FormData();
-        formData.append('titulo', values.titulo); // Use values directly
+        formData.append('titulo', values.titulo); 
         formData.append('descripcion', values.descripcion);
         formData.append('cat_cursos_id', values.cat_cursos_id.toString());
         formData.append('duracion', values.duracion.toString());
         formData.append('nivel', values.nivel);
-        formData.append('portada', actualFile); // Use actualFile directly
-
-        values.modulos.forEach((module, index) => { // Use values.modulos directly
-            // For complex objects like `modulos`, it's often better to stringify the whole array
-            // or send individual properties based on what your backend expects from FormData.
-            // If your backend expects `modulos` as a JSON string, then append it once:
-            // formData.append('modulos', JSON.stringify(values.modulos));
-            // If it expects individual fields like below, ensure it handles arrays correctly.
-            formData.append(`modulos[${index}].titulo`, module.titulo);
-            formData.append(`modulos[${index}].descripcion`, module.descripcion);
-        });
-
-        // --- FIX: Removed 'as any' since createCourseMutation expects FormData ---
+        formData.append('portada', actualFile);
+        formData.append('modulos', JSON.stringify(values.modulos));
         createCourseMutation.mutate(formData);
     };
 

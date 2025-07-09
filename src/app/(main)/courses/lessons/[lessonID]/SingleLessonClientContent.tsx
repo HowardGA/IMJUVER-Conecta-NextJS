@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect } from "react";
-import { useGetLesson } from "@/hooks/useCourses";
-import { Spin, Alert, Typography, Divider, List, Button, Space, Carousel, Tag } from 'antd';
+import { useGetLesson,useDeleteLesson } from "@/hooks/useCourses";
+import { Spin, Alert, Typography, Divider, List, Button, Space, Carousel, Tag, message } from 'antd';
 import {
     FilePdfOutlined, FileExcelOutlined, FilePptOutlined, FileWordOutlined,
     FileImageOutlined, FileOutlined, DownloadOutlined, VideoCameraOutlined,
@@ -22,6 +22,9 @@ import { Video, Archivo } from "@/services/courseServices";
 import './lesson.css';
 import NextContentButton from "../../components/NextContentButton";
 import { useContenidoIdByType } from "@/hooks/useCourseProgress";
+import LessonAdminControls from "../../components/LessonAdminControls";
+import { useUser } from "@/components/providers/UserProvider";
+import { useRouter } from 'next/navigation';
 
 
 const { Title, Paragraph, Text } = Typography;
@@ -40,8 +43,20 @@ const getFileIcon = (fileType: string) => {
 };
 
 const SingleLessonClientContent: React.FC<SingleLessonClientContentProps> = ({lessonID}) => {
+    const {user} = useUser();
     const {data: lesson, isLoading, isError, error} = useGetLesson(lessonID);
     const { data } = useContenidoIdByType('Leccion', lessonID);
+    const router = useRouter();
+    const [messageApi, contextHolder] = message.useMessage();
+    const {mutate: deleteLesson} = useDeleteLesson({ messageApi: messageApi});
+
+    const handleUpdate = () => {
+        router.push(`/courses/edit/lesson/${lessonID}`);
+    };
+    
+    const handleDelete = async () => {
+        deleteLesson(lessonID);
+    };
 
     const editor = useEditor({
         extensions: [
@@ -116,6 +131,12 @@ if (isLoading) {
 
     return (
         <div style={{ padding: '40px 20px', maxWidth: '900px', margin: '0 auto' }}>
+             {contextHolder}
+            {user?.rol_id === 1 &&
+                <LessonAdminControls 
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+            />}
             <Title level={2} style={{ marginBottom: '15px' }}>{lesson.titulo}</Title>
             {data?.contenidoId && (
                 <NextContentButton currentContenidoId={data.contenidoId} contentId={lessonID}/>

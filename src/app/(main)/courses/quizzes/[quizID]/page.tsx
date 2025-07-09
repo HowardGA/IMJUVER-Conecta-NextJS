@@ -1,16 +1,19 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Button, Spin, Alert, Form, Result, Typography } from 'antd';
-import { useQuizDetails, useSubmitQuiz } from '@/hooks/useCourses'; 
+import { Button, Spin, Alert, Form, Result, Typography, message } from 'antd';
+import { useQuizDetails, useSubmitQuiz, useDeleteQuiz } from '@/hooks/useCourses'; 
 import QuizQuestionTaking from '../../components/QuizQuestionTaking'; 
 import { UserSelectedAnswer, QuizSubmissionPayload } from '@/services/courseServices'; 
 import NextContentButton from '../../components/NextContentButton';
 import { useContenidoIdByType } from '@/hooks/useCourseProgress';
+import { useUser } from "@/components/providers/UserProvider";
+import QuizzAdminControls from '../../components/QuizzAdminControls';
 
 const { Title, Text } = Typography;
 
 const QuizTakingPage: React.FC = () => {
+    const {user} = useUser();
     const router = useRouter();
     const params = useParams();
     const quizIdParam = params.quizID;
@@ -18,6 +21,8 @@ const QuizTakingPage: React.FC = () => {
     const { data } = useContenidoIdByType('Cuestionario', parsedQuizId);
     const { data: quiz, isLoading, isError, error } = useQuizDetails(parsedQuizId);
     const [userAnswers, setUserAnswers] = useState<UserSelectedAnswer[]>([]);
+    const [messageApi, contextHolder] = message.useMessage();
+    const {mutate: deleteQuiz} = useDeleteQuiz({ messageApi: messageApi});
 
     const submitQuizMutation = useSubmitQuiz();
 
@@ -25,13 +30,20 @@ const QuizTakingPage: React.FC = () => {
         if (quiz) {
             const initialAnswers: UserSelectedAnswer[] = quiz.preguntas.map(q => ({
                 pregunta_id: q.pregunta_id,
-                selected_respuesta_ids: [], // Start with no answers selected
+                selected_respuesta_ids: [], 
             }));
             setUserAnswers(initialAnswers);
         }
-    }, [quiz]); // Re-run if quiz data changes
+    }, [quiz]); 
 
-    // Handler for when a user selects an answer for a specific question
+    const handleUpdate = () => {
+        router.push(`/courses/edit/quiz/${parsedQuizId}`);
+    };
+    
+    const handleDelete = async () => {
+        deleteQuiz(parsedQuizId);
+    };
+
     const handleAnswerChange = (pregunta_id: number, selected_respuesta_ids: number[]) => {
         setUserAnswers(prevAnswers => {
             const existingAnswerIndex = prevAnswers.findIndex(ans => ans.pregunta_id === pregunta_id);
@@ -45,7 +57,6 @@ const QuizTakingPage: React.FC = () => {
                 };
                 return updatedAnswers;
             } else {
-                // Add new answer for this question
                 return [...prevAnswers, { pregunta_id, selected_respuesta_ids }];
             }
         });
@@ -53,8 +64,6 @@ const QuizTakingPage: React.FC = () => {
 
     const handleSubmit = async () => {
         if (!quiz) return;
-
-        // Perform validation (e.g., ensure all questions have been answered)
         const allQuestionsAnswered = quiz.preguntas.every(q =>
             userAnswers.some(ua => ua.pregunta_id === q.pregunta_id && ua.selected_respuesta_ids.length > 0)
         );
@@ -71,14 +80,8 @@ const QuizTakingPage: React.FC = () => {
 
         try {
             await submitQuizMutation.mutateAsync(payload);
-            // After successful submission, you might want to show a result page
-            // Or change the UI to show the score/feedback
-            // For now, let's just log and show a success message
-            // In a real app, you'd navigate to a dedicated results page.
-            //router.push(`/main/courses/${router.query.mod_id}/quiz-results/${quiz.quiz_id}`); // Example redirect
         } catch (submitError) {
             console.error("Submission failed:", submitError);
-            // Error handling is done in useSubmitQuiz hook, but good to have a local catch
         }
     };
 
@@ -114,6 +117,13 @@ const QuizTakingPage: React.FC = () => {
 
     return (
         <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px', border: '1px solid #eee', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            {contextHolder}
+             {user?.rol_id === 1 &&
+                <QuizzAdminControls 
+                onUpdate={handleUpdate}
+                onDelete={handleDelete}
+                // isLoading={isProcessing}
+            />}
             <Title level={2}>{quiz.titulo}</Title>
              {data?.contenidoId && (
                 <NextContentButton currentContenidoId={data.contenidoId} contentId={parsedQuizId} />

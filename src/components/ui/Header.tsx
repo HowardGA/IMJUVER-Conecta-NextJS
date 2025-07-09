@@ -18,11 +18,10 @@ const AppHeader: React.FC = () => {
   const menuItems = [
     { key: 'home', label: <Link href="/">Inicio</Link> },
     { key: 'courses', label: <Link href="/courses">Cursos</Link> },
-    { key: 'news', label: <Link href="/cursos">Anuncios</Link> },
-    { key: 'directory', label: <Link href="/cursos">Directorio</Link> },
-    { key: 'work', label: <Link href="/cursos">Bolsa de Trabajo</Link> },
+    { key: 'news', label: <Link href="/announcements">Anuncios</Link> },
+    { key: 'directory', label: <Link href="/directory">Directorio</Link> },
+    { key: 'work', label: <Link href="/jobs">Bolsa de Trabajo</Link> },
     { key: 'opinions', label: <Link href="/cursos">Propuestas</Link> },
-    { key: 'disscusion', label: <Link href="/cursos">Foro</Link> },
     { key: 'profile', label: <Link href="/profile">Perfil</Link> },
   ];
 
@@ -69,6 +68,11 @@ const AppHeader: React.FC = () => {
             <Link href="/login">
                 <Button type="primary">Acceder</Button>
             </Link>
+            }
+            {user?.rol_id === 1 &&
+              <Link href="/admin">
+                <Button type="primary">Admin</Button>
+              </Link>
             }
         </Space>
     </AntdHeader>

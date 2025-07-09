@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { QueryObserverResult, RefetchOptions } from '@tanstack/react-query'; 
 import { fetchCurrentUser, logoutUser } from '@/services/authServices';
 import { UserData } from '@/interfaces/authInterface';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface UserContextType {
   user: UserData | null;
@@ -26,6 +26,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
   const queryClient = useQueryClient();
   const [user, setUserState] = useState<UserData | null>(null);
   const router = useRouter();
+  const pathname = usePathname(); 
+  const isPublicAuthRoute = pathname.startsWith('/emailConfirmation');
 
   const { data, isLoading, isError, refetch } = useQuery<UserData, Error>({ 
     queryKey: ['currentUser'],
@@ -34,7 +36,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     retry: false,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    enabled: true,
+    enabled: !isPublicAuthRoute,
   });
 
   useEffect(() => {
@@ -71,7 +73,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       user,
       isLoadingUser: isLoading,
       isLoggedIn: !!user,
-      refetchUser: refetch, // This 'refetch' directly matches the type we defined
+      refetchUser: refetch,
       logout,
       setUser,
     }),

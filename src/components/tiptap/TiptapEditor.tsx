@@ -14,7 +14,7 @@ import ListItem from '@tiptap/extension-list-item';
 import TiptapToolbar from './TiptapToolbar';
 
 interface TiptapEditorProps {
-    initialContent?: string | JSONContent;
+    initialContent?: string | JSONContent | null;
     onChange: (content: JSONContent) => void;
 }
 
@@ -38,7 +38,9 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ initialContent, onChange })
             ListItem,
 
         ],
-        content: initialContent || '<p></p>',
+        content: initialContent === undefined || initialContent === null || initialContent === ''
+            ? { type: 'doc', content: [{ type: 'paragraph', content: [] }] } 
+            : initialContent,
         onUpdate: ({ editor }) => {
             onChange(editor.getJSON());
         },
@@ -49,18 +51,33 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({ initialContent, onChange })
         },
     });
 
-    useEffect(() => {
-        if (editor && initialContent) {
-            const currentEditorContent = editor.getJSON();
-            const initialContentAsJSON = typeof initialContent === 'string'
-                ? { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: initialContent }] }] } // Simple conversion for string to JSONContent
-                : initialContent;
-            if (JSON.stringify(currentEditorContent) !== JSON.stringify(initialContentAsJSON)) {
-                editor.commands.setContent(initialContent);
-            }
+    // useEffect(() => {
+    //     if (editor && initialContent) {
+    //         const currentEditorContent = editor.getJSON();
+    //         const initialContentAsJSON = typeof initialContent === 'string'
+    //             ? { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: initialContent }] }] } // Simple conversion for string to JSONContent
+    //             : initialContent;
+    //         if (JSON.stringify(currentEditorContent) !== JSON.stringify(initialContentAsJSON)) {
+    //             editor.commands.setContent(initialContent);
+    //         }
+    //     }
+    // }, [editor, initialContent]);
+       useEffect(() => {
+        if (!editor || initialContent === undefined || initialContent === null) {
+            return; 
+        }
+        const currentEditorContent = editor.getJSON();
+        const initialContentAsJSON: JSONContent = typeof initialContent === 'string'
+            ? JSON.parse(initialContent) 
+            : initialContent;
+        if (JSON.stringify(currentEditorContent) !== JSON.stringify(initialContentAsJSON)) {
+            editor.commands.setContent(initialContentAsJSON, false);
         }
     }, [editor, initialContent]);
 
+     if (!editor) {
+        return <div className="min-h-[200px] border rounded p-2 flex items-center justify-center">Cargando editor...</div>;
+    }
 
     return (
         <div style={{ border: '1px solid #d9d9d9', borderRadius: '4px', minHeight: '200px' }}>

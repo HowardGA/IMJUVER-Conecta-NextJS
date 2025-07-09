@@ -158,6 +158,7 @@ export const getSingleCourse = async (courseID:number): Promise<Course> => {
 
 export const getLesson = async (lessonID:number): Promise<Lesson> => {
     const response = await apiClient.get(`/course/lessons/${lessonID}`);
+    console.log(response)
     return response.data;
 }
 
@@ -183,6 +184,10 @@ export const createQuiz = async (quizData:Quiz) => {
     return apiClient.post('/course/quiz', quizData);
 }
 
+export const updateQuiz = async (quizData:Quiz, quizzId: number) => {
+    return await apiClient.put(`/course/quiz/${quizzId}`, quizData)
+}
+
 export const getQuizById = async (quizId: number): Promise<QuizForTaking> => {
     const response = await apiClient.get(`/course/quiz/${quizId}`);
     return response.data;
@@ -192,3 +197,20 @@ export const submitQuizAnswers = async (quizId: number, payload: QuizSubmissionP
     const response = await apiClient.post(`/course/quiz/${quizId}/submit`, payload);
     return response.data;
 };
+
+export const updateLesson = (lessonData: FormData, lessonId:number) => {
+    console.log(lessonData)
+   return apiClient.put(`/course/lessons/${lessonId}`, lessonData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
+
+export const deleteLesson = async (lessonId: number) => {
+    return apiClient.delete(`/course/lesson/${lessonId}`);
+}
+
+export const deleteQuiz = async (quizId: number) => {
+    return apiClient.delete(`/course/quiz/${quizId}`);
+}

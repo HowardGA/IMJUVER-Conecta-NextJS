@@ -223,7 +223,7 @@ const SingleCourseClientContent: React.FC<SingleCourseClientContentProps> = ({co
                                                         passHref
                                                         style={{ textDecoration: 'none', color: 'inherit' }}
                                                     >
-                                                        <Text>{item.orden}. {item.leccion.titulo} (Lección)</Text>
+                                                        <Text> {item.leccion.titulo} (Lección)</Text>
                                                     </Link>
                                                     ) : item.tipo === 'Cuestionario' && item.quiz ? ( 
                                                     <Link
@@ -231,7 +231,7 @@ const SingleCourseClientContent: React.FC<SingleCourseClientContentProps> = ({co
                                                         passHref
                                                         style={{ textDecoration: 'none', color: 'inherit' }}
                                                     >
-                                                        <Text>{item.orden}. {item.quiz.titulo} (Cuestionario)</Text>
+                                                        <Text> {item.quiz.titulo} (Cuestionario)</Text>
                                                     </Link>
                                                     ) : (
                                                     <Text type="secondary">Contenido desconocido o no disponible.</Text>

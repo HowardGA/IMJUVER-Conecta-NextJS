@@ -81,7 +81,7 @@ const CoursesGrid: React.FC<CoursesGridProps> = ({ courses, pageSize = 8 }) => {
                                     title={course.titulo}
                                     lessonQty={course.modulos ? course.modulos.length : 0}
                                     time={course.duracion}
-                                    imageUrl={course.portada.url}
+                                    imageUrl={course.portada ? course.portada.url : ''}
                                     level={course.nivel}
                                     category={course.categoria?.nombre}
                                 />
