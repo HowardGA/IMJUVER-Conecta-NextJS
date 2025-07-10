@@ -9,9 +9,11 @@ import { Directorio } from '@/interfaces/directorioInterface';
 import Hero from '@/components/ui/Hero';
 import DirImg from '../../../../public/directory.png';
 import { PlusOutlined } from '@ant-design/icons';
+import { useUser } from '@/components/providers/UserProvider';
 
 export default function DirectoryOage() {
   const { data: offers, isLoading, error } = useDirectorio();
+  const {user} = useUser();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -30,13 +32,15 @@ export default function DirectoryOage() {
             />
         </Col>
         <Col>
-        <Button 
-          type="primary" 
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-            <PlusOutlined/>
-          Crear nuevo Contacto
-        </Button>
+        {user?.rol_id === 1 &&
+          <Button 
+            type="primary" 
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+              <PlusOutlined/>
+            Crear nuevo Contacto
+          </Button>
+}
         </Col>
       </Row>
 

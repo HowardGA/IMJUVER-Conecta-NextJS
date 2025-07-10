@@ -32,6 +32,8 @@ export const useLogin = () => {
         },
         onSuccess: (data) => {
             setUser(data);
+            console.log('Login successful on frontend.');
+            console.log('Cookies after login:', document.cookie); 
             router.push('/courses');
         },
         onError: (error) => {

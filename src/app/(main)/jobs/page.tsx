@@ -9,9 +9,11 @@ import { Oferta } from '@/interfaces/ofertaInterface';
 import Hero from '@/components/ui/Hero';
 import JobsImg from '../../../../public/jobs.png';
 import { PlusOutlined } from '@ant-design/icons';
+import { useUser } from '@/components/providers/UserProvider';
 
 export default function JobsPage() {
   const { data: offers, isLoading, error } = useGetAllOffers();
+  const {user} = useUser();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -30,13 +32,15 @@ export default function JobsPage() {
             />
         </Col>
         <Col>
-        <Button 
-          type="primary" 
-          onClick={() => setIsCreateModalOpen(true)}
-        >
-            <PlusOutlined/>
-          Crear nueva oferta
-        </Button>
+        {user?.rol_id === 1 &&
+          <Button 
+            type="primary" 
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+              <PlusOutlined/>
+            Crear nueva oferta
+          </Button>
+        }
         </Col>
       </Row>
 
