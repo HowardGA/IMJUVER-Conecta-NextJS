@@ -15,15 +15,22 @@ const AppHeader: React.FC = () => {
   const { currentTheme } = useTheme(); 
   const {user, logout, isLoadingUser} = useUser();
 
-  const menuItems = [
+  const allMenuItems = [
     { key: 'home', label: <Link href="/">Inicio</Link> },
     { key: 'courses', label: <Link href="/courses">Cursos</Link> },
     { key: 'news', label: <Link href="/announcements">Anuncios</Link> },
     { key: 'directory', label: <Link href="/directory">Directorio</Link> },
     { key: 'work', label: <Link href="/jobs">Bolsa de Trabajo</Link> },
     { key: 'opinions', label: <Link href="/cursos">Propuestas</Link> },
-    { key: 'profile', label: <Link href="/profile">Perfil</Link> },
+    { key: 'profile', label: <Link href="/profile">Perfil</Link>, requiresAuth: true }
   ];
+
+  const menuItems = allMenuItems.filter(item => {
+    if (item.requiresAuth && !user) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <AntdHeader
