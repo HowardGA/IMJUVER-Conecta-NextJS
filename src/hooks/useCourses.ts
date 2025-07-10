@@ -87,7 +87,7 @@ export const useGetSingleCourse = (courseID: number) => {
 
 export const useGetLesson = (lessonID: number) => {
     return useQuery<Lesson, AxiosError>({
-        queryKey: ['singleCourse', lessonID],
+        queryKey: ['singleLesson', lessonID],
         queryFn: () => getLesson(lessonID),
         enabled: !!lessonID && !isNaN(lessonID),
     });
@@ -107,6 +107,7 @@ export const useCreateCourse = (routerInstance: AppRouterInstance) => {
             return response.data;
         },
         onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['singleCourse', data.curso.curs_id] });
             routerInstance.push(`/courses/${data.curso.curs_id}`);
         },
         onError: (error: AxiosError) => { 
@@ -123,6 +124,7 @@ export const useCreateLesson = (courseId: number) => {
             return response.data;
         },
         onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['singleCourse'] });
             router.push(`/courses/${courseId}/lessons/${data.lesson.lec_id}`);
         },
         onError: (error: AxiosError) => {
@@ -147,6 +149,7 @@ export const useCreateQuiz = () => {
             return response.data;
         },
         onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['singleCourse'] });
             router.push(`/courses/${data.courseId}`);
         },
         onError: (error: AxiosError) => {
@@ -164,13 +167,15 @@ export const useQuizDetails = (quizId: number) => {
 };
 
 export const useUpdateQuiz = (quizIdFromHook: number) => {
+    const router = useRouter();
     return useMutation({
         mutationFn: async (quizData:Quiz) => {
             const response = await updateQuiz(quizData, quizIdFromHook);
             return response.data;
         },
         onSuccess: () => {
-            //invalidate quiz queries
+            queryClient.invalidateQueries({ queryKey: ['quizDetails'] });
+            router.push('/courses');
         },
          onError: (error: AxiosError) => {
             console.error('Error creating quiz:', error);
@@ -199,6 +204,7 @@ export const useUpdateLesson = (lessonId: number) => {
             return response.data;
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['singleLesson'] });
             router.push('/courses')
         },
         onError: (error: AxiosError) => {
