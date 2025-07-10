@@ -8,6 +8,12 @@ const nextConfig = {
         port: '3001',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'https', 
+        hostname: 'i.ibb.co',
+        port: '',
+        pathname: '/**', 
+      },
     ],
   },
 };

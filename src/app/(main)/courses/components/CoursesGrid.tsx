@@ -85,7 +85,7 @@ const CoursesGrid: React.FC<CoursesGridProps> = ({ courses, pageSize = 8 }) => {
                                     level={course.nivel}
                                     category={course.categoria?.nombre}
                                 />
-                                </Link>
+                                </Link> 
                             </motion.div>
                         </Col>
                     ))}
