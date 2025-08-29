@@ -8,8 +8,6 @@ import { FileOutlined, PictureOutlined } from '@ant-design/icons';
 import { useUser } from '@/components/providers/UserProvider';
 import { UploadChangeParam, UploadFile } from 'antd/es/upload';
 import type { RcFile } from 'antd/lib/upload/interface';
-import Image from 'next/image';
-
 
 const { Option } = Select;
 
@@ -301,14 +299,7 @@ const CreateAnnouncementModal: React.FC<CreateAnnouncementModalProps> = ({ visib
       </Spin>
 
       <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={() => setPreviewOpen(false)}>
-       <div style={{ width: '100%', height: 'auto', position: 'relative' }}> {/* Or a fixed height, e.g., '300px' */}
-          <Image
-            alt="preview"
-            src={previewImage}
-            fill 
-            style={{ objectFit: 'contain' }} 
-          />
-        </div>
+        <img alt="preview" style={{ width: '100%' }} src={previewImage} />
       </Modal>
     </Modal>
   );

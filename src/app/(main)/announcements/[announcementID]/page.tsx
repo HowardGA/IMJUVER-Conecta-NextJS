@@ -27,7 +27,6 @@ import { CategoriaPublicacion, Imagen as ImageInterface, Recurso as ResourceInte
 import { FileOutlined, PictureOutlined } from '@ant-design/icons';
 import { UpdatePublicacionDto } from '@/interfaces/announcementInterface';
 import { useMessage } from '@/components/providers/MessageProvider';
-import Image from 'next/image';
 
 const { Option } = Select;
 
@@ -167,20 +166,20 @@ const handleUpdate = async (values: UpdatePublicacionDto) => {
             {announcement.imagenes && announcement.imagenes.length > 0 ? (
               <Carousel arrows infinite>
                 {announcement.imagenes.map((img: ImageInterface) => (
-                  <div key={img.img_id} style={{ position: 'relative', width: '100%', height: '400px' }}>
-                
-                      <Image
-                          src={img.url}
-                          alt={`Imagen de ${announcement.titulo}`}
-                          fill
-                          style={{
-                              objectFit: 'contain',
-                              borderRadius: 8,
-                              boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                              display: 'block',
-                              margin: 'auto'
-                          }}
-                      />
+                  <div key={img.img_id}>
+                    <img
+                      src={img.url}
+                      alt={`Imagen de ${announcement.titulo}`}
+                      style={{
+                        width: '100%',
+                        maxHeight: '400px',
+                        objectFit: 'contain',
+                        borderRadius: 8,
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                        display: 'block',
+                        margin: 'auto'
+                      }}
+                    />
                   </div>
                 ))}
               </Carousel>

@@ -9,7 +9,6 @@ import jsPDF from 'jspdf';
 import { useUser } from '@/components/providers/UserProvider';
 import { useGetSingleCourse } from '@/hooks/useCourses';
 import { useCoursePercentage } from '@/hooks/useCourseProgress';
-import Image from 'next/image';
 
 const { Title, Text, Paragraph } = Typography;
 const COMPLETION_THRESHOLD = 100; 
@@ -154,17 +153,16 @@ const CertificatePage: React.FC = () => {
             alignItems: 'center', 
             boxSizing: 'border-box', 
         }}>
-           <div style={{ position: 'relative', width: '25%', maxWidth: '205px', height: '100px', marginBottom: '2vw' }}>
-              <Image
-                  src="/logo.png"
-                  alt="Company Logo"
-                  fill
-                  sizes="25vw"
-                  style={{
-                      objectFit: 'contain',
-                  }}
-              />
-          </div>
+            <img
+                src="/logo.png"
+                alt="Company Logo"
+                style={{
+                    height: 'auto',
+                    maxWidth: '25%', 
+                    width: 'min(205px, 25%)', 
+                    marginBottom: '2vw', 
+                }}
+            />
           <div style={{
               marginBottom: '4vw', 
               marginTop: '2vw',
@@ -238,23 +236,16 @@ const CertificatePage: React.FC = () => {
                 marginTop: window.innerWidth < 768 ? '2vw' : '0',
             }}>
                
-             <div style={{ 
-                  position: 'relative', 
-                  width: '50%', 
-                  maxWidth: '200px', 
-                  height: '100px',
-                  marginBottom: '1vw',
-                  }}>
-                  <Image
-                      src="/firma.png"
-                      alt="Signature"
-                      fill
-                      sizes="50vw"
-                      style={{
-                          objectFit: 'contain',
-                      }}
-                  />
-              </div>
+                <img
+                    src="/firma.png"
+                    alt="Signature"
+                    style={{
+                        height: 'auto',
+                        maxWidth: '50%',
+                        width: 'min(200px, 50%)', 
+                        marginBottom: '1vw',
+                    }}
+                />
               <div style={{
                   borderBottom: '1px solid #777',
                   width: 'min(250px, 70%)', 
