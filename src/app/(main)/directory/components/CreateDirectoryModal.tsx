@@ -1,8 +1,9 @@
-import { Modal, Form, Input, Select, Button, message } from 'antd';
+import { Modal, Form, Input, Select, Button } from 'antd';
 import { useCreateDirectorio } from '@/hooks/directorioHooks';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/apiClient';
 import { CreateDirectorioDto } from '@/interfaces/directorioInterface';
+import { useMessage } from '@/components/providers/MessageProvider';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -20,6 +21,7 @@ interface CategoryOption {
 export default function CreateDirectoryModal({ open, onCancel }: CreateDirectoryModalProps) {
   const [form] = Form.useForm<CreateDirectorioDto>();
   const createMutation = useCreateDirectorio();
+  const message = useMessage();
 
   const { data: categories } = useQuery<CategoryOption[]>({
     queryKey: ['directorio-categories'],
@@ -63,6 +65,7 @@ export default function CreateDirectoryModal({ open, onCancel }: CreateDirectory
         </Button>,
       ]}
       width={700}
+      style={{ top: 20 }}
     >
       <Form form={form} layout="vertical">
         <Form.Item<CreateDirectorioDto>

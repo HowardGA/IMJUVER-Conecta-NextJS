@@ -1,0 +1,30 @@
+.leftCol {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.leftCol-responsive {
+    border-right: none;
+    padding-bottom: 24px;
+}
+
+.rightCol {
+    overflow-y: auto;
+    max-height: none;
+    padding-left: 0;
+}
+
+@media (min-width: 768px) {
+    .leftCol-responsive {
+        border-right: 1px solid #f0f0f0;
+        padding-bottom: 0;
+    }
+
+    .rightCol {
+        max-height: 25rem;
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+}

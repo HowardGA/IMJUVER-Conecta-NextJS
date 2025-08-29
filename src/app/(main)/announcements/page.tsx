@@ -17,7 +17,8 @@ const gridContainerVariants = {
     visible: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.05,
+            staggerChildren: 0.1,
+            delayChildren: 0.2,
         },
     },
 };
@@ -70,7 +71,7 @@ const AnnouncementPage: React.FC = () => {
 
     if (announcementError) {
         return (
-            <div style={{ padding: '24px' }}>
+             <div style={{ padding: '1rem', textAlign: 'center' }}> 
                 <Alert
                     message="Error al cargar anuncios"
                     description={`No pudimos cargar los eventos. Por favor, intenta de nuevo. Detalles: ${announcementError.message}`}
@@ -82,14 +83,22 @@ const AnnouncementPage: React.FC = () => {
     }
 
     return (
-        <>
-            <Hero title="Anuncios y eventos proximos" subTitle="Acompañanos y se parte de nuestros eventos" imageSrc={EventsHero}/>
+        <div style={{ backgroundImage: `url('/background/imjuver-pattern.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed', }}>
+            <Hero
+                title="Anuncios y eventos próximos"
+                subTitle="Acompáñanos y sé parte de nuestros eventos"
+                imageSrc={EventsHero}
+            />
             <FeaturedAnnouncementsCarousel
                 announcements={featuredAnnouncements || []}
                 isLoading={isLoadingFeatured}
                 error={featuredError}
             />
-             <AnnoucementsToolbar
+            <AnnoucementsToolbar
                 onSearchChange={setSearchTerm}
                 onCategoryChange={setSelectedCategoryId}
                 onAddAnnouncementClick={handleAddAnnouncementClick}
@@ -98,16 +107,17 @@ const AnnouncementPage: React.FC = () => {
                 variants={gridContainerVariants}
                 initial="hidden"
                 animate="visible"
+                style={{ padding: '0 1rem', maxWidth: '1200px', margin: '0 auto' }} 
             >
-                <AnnouncementGrid announcements={announcements || []}/> 
+                <AnnouncementGrid announcements={announcements || []} />
             </motion.div>
-             <CreateAnnouncementModal
+            <CreateAnnouncementModal
                 visible={isCreateModalVisible}
                 onClose={handleCreateModalClose}
                 onSuccess={handleCreateModalSuccess}
             />
-        </>
+        </div>
     );
-}
+};
 
 export default AnnouncementPage;

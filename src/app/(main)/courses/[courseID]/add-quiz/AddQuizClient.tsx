@@ -93,92 +93,117 @@ const AddQuizClient: React.FC<AddQuizClientProps> = ({ courseId }) => {
     };
 
     return (
-        <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>
-            {contextHolder} 
-            <Title level={2} style={{ marginBottom: '30px', textAlign: 'center' }}>Nuevo Cuestionario</Title>
-            <Form
-                form={form}
-                layout="vertical"
-                onFinish={onFinish}
-                initialValues={{
-                    preguntas: [{
-                        texto_pregunta: '',
-                        tipo_pregunta: '',
-                        respuestas: [{ texto_respuesta: '', correcta: false }]
-                    }]
-                }}
-                scrollToFirstError
+    <div style={{
+        padding: '20px', 
+        maxWidth: '900px', 
+        margin: '20px auto', 
+        backgroundColor: '#fff', 
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        borderRadius: '8px',
+        boxSizing: 'border-box', 
+        width: 'calc(100% - 40px)', 
+    }}>
+        {contextHolder}
+        <Title level={2} style={{ marginBottom: '20px', textAlign: 'center', fontSize: '1.8em' }}>
+            Nuevo Cuestionario
+        </Title>
+        <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            initialValues={{
+                preguntas: [{
+                    texto_pregunta: '',
+                    tipo_pregunta: '',
+                    respuestas: [{ texto_respuesta: '', correcta: false }]
+                }]
+            }}
+            scrollToFirstError
+        >
+            <Divider orientation="left" style={{ margin: '30px 0' }}>Selección de módulo</Divider>
+            <Form.Item
+                name="mod_id"
+                label="Selecciona el módulo al que le asignarás el cuestionario"
+                rules={[{ required: true, message: 'Por favor, seleccione un módulo' }]}
             >
-                <Divider orientation="left">Selección de módulo</Divider>
-                <Form.Item
-                    name="mod_id"
-                    label="Selecciona el módulo al que le asignarás el cuestionario"
-                    rules={[{ required: true, message: 'Por favor, seleccione un módulo' }]}
+                <Select
+                    placeholder="Selecciona un módulo"
+                    loading={modulesLoading}
+                    disabled={modulesLoading || modulesError}
+                    showSearch 
+                    optionFilterProp="children" 
                 >
-                    <Select
-                        placeholder="Selecciona un módulo"
-                        loading={modulesLoading} 
-                        disabled={modulesLoading || modulesError} 
-                    >
-                        {modules?.map(module => (
-                            <Option key={module.mod_id} value={module.mod_id}>
-                                {module.titulo} (Orden: {module.orden})
-                            </Option>
+                    {modules?.map(module => (
+                        <Option key={module.mod_id} value={module.mod_id}>
+                            {module.titulo} (Orden: {module.orden})
+                        </Option>
+                    ))}
+                </Select>
+            </Form.Item>
+            <Divider orientation="left" style={{ margin: '30px 0' }}>Información general</Divider>
+            <Form.Item
+                name="titulo"
+                label="Ingresa el título del cuestionario"
+                rules={[{ required: true, message: 'Se debe de ingresar un título' }]}
+            >
+                <Input placeholder="Título del cuestionario" /> 
+            </Form.Item>
+            <Form.Item
+                name="descripcion"
+                label="Ingresa una descripción breve"
+                rules={[{ required: true, message: 'Se debe de ingresar una descripción' }]}
+            >
+                <Input.TextArea rows={3} placeholder="Descripción breve del cuestionario" /> 
+            </Form.Item>
+            <Divider orientation="left" style={{ margin: '30px 0' }}>Preguntas y respuestas</Divider>
+            <Form.List name="preguntas">
+                {(fields, { add, remove }) => (
+                    <>
+                        {fields.map(({ key, name, ...restField }, index) => ( 
+                            <QuestionItem
+                                key={key}
+                                name={name}
+                                index={index}
+                                remove={() => remove(name)} 
+                                reorderQuestions={reorderQuestions}
+                                fieldsLength={fields.length}
+                                form={form}
+                                {...restField} 
+                            />
                         ))}
-                    </Select>
-                </Form.Item>
-                <Divider orientation="left">Información general</Divider>
-                <Form.Item
-                    name="titulo"
-                    label="Ingresa el título del cuestionario"
-                    rules={[{ required: true, message: 'Se debe de ingresar un título' }]}
+                        <Form.Item>
+                            <Button
+                                type="dashed"
+                                onClick={() => add({
+                                    texto_pregunta: '',
+                                    tipo_pregunta: 'SINGLE_CHOICE', 
+                                    respuestas: [{ texto_respuesta: '', correcta: false }]
+                                })}
+                                block 
+                                icon={<PlusOutlined />}
+                                style={{ height: '48px', marginTop: '20px' }} 
+                            >
+                                Agregar Pregunta
+                            </Button>
+                        </Form.Item>
+                    </>
+                )}
+            </Form.List>
+            <Form.Item style={{ marginTop: '40px', textAlign: 'center' }}>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    size="large"
+                    icon={<SaveOutlined />}
+                    loading={isCreatingQuiz}
+                    block 
                 >
-                    <Input />
-                </Form.Item>
-                <Form.Item
-                    name="descripcion"
-                    label="Ingresa una descripción breve"
-                    rules={[{ required: true, message: 'Se debe de ingresar una descripción' }]}
-                >
-                    <Input />
-                </Form.Item>
-                <Divider orientation="left">Preguntas y respuestas</Divider>
-                <Form.List name="preguntas">
-                    {(fields, { add, remove }) => (
-                        <>
-                            {fields.map(({ key, name, }, index) => (
-                                <QuestionItem
-                                    key={key}
-                                    name={name}
-                                    index={index}
-                                    remove={remove}
-                                    reorderQuestions={reorderQuestions}
-                                    fieldsLength={fields.length}
-                                    form={form}
-                                />
-                            ))}
-                            <Form.Item>
-                                <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                                    Agregar Pregunta
-                                </Button>
-                            </Form.Item>
-                        </>
-                    )}
-                </Form.List>
-                <Form.Item style={{ marginTop: '30px', textAlign: 'center' }}>
-                    <Button
-                        type="primary"
-                        htmlType="submit"
-                        size="large"
-                        icon={<SaveOutlined />}
-                        loading={isCreatingQuiz} 
-                    >
-                        Crear cuestionario
-                    </Button>
-                </Form.Item>
-            </Form>
-        </div>
-    );
+                    Crear cuestionario
+                </Button>
+            </Form.Item>
+        </Form>
+    </div>
+);
 }
 
 export default AddQuizClient;

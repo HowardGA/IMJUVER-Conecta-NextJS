@@ -3,8 +3,8 @@ import { login, register, verifyEmail } from '@/services/authServices';
 import { LoginForm, RegisterForm, UseEmailVerificationResult, UserData } from '@/interfaces/authInterface';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/components/providers/UserProvider';
-import { message } from "antd";
 import { AxiosError } from 'axios';
+import { useMessage } from '@/components/providers/MessageProvider';
 
 export interface RegistrationSuccessResponse {
     message: string;
@@ -24,6 +24,7 @@ interface BackendErrorData {
 export const useLogin = () => {
     const router = useRouter();
     const { setUser } = useUser();
+    const message = useMessage();
 
     return useMutation<UserData, AxiosError, LoginForm>({ 
         mutationFn: async (credentials: LoginForm) => {
@@ -31,9 +32,8 @@ export const useLogin = () => {
             return userData;
         },
         onSuccess: (data) => {
+            message.success("Inicio de sesión exitoso");
             setUser(data);
-            console.log('Login successful on frontend.');
-            console.log('Cookies after login:', document.cookie); 
             router.push('/courses');
         },
         onError: (error) => {
@@ -45,6 +45,8 @@ export const useLogin = () => {
 
 export const useRegister = () => {
     const router = useRouter();
+    const message = useMessage();
+
     return useMutation<RegistrationSuccessResponse, AxiosError, RegisterForm>({ 
         mutationFn: async (FormData: RegisterForm) => {
             const responseData = await register(FormData);
@@ -103,7 +105,7 @@ export const useEmailVerification = (token: string | undefined): UseEmailVerific
   if (isLoading) {
     displayMessage = 'Confirmando su correo electrónico...';
   } else if (isActualSuccess) {
-    displayMessage = (data as VerificationApiResponse)?.message || 'Email verificado con éxito.'; // ⭐ Add (data as VerificationApiResponse) ⭐
+    displayMessage = (data as VerificationApiResponse)?.message || 'Email verificado con éxito.'; 
   } else if (isExpiredToken) {
     displayMessage = ((data as VerificationApiResponse)?.message || (error as AxiosError<BackendErrorData>)?.response?.data?.message) || 'El enlace de verificación ha expirado o ya fue utilizado.'; // ⭐ Add type assertions ⭐
   } else if (isGeneralError) {

@@ -21,7 +21,7 @@ import ListItem from '@tiptap/extension-list-item';
 import { Video, Archivo } from "@/services/courseServices";
 import './lesson.css';
 import NextContentButton from "../../components/NextContentButton";
-import { useContenidoIdByType } from "@/hooks/useCourseProgress";
+import { useContenidoIdByType, useAddProgress } from "@/hooks/useCourseProgress";
 import LessonAdminControls from "../../components/LessonAdminControls";
 import { useUser } from "@/components/providers/UserProvider";
 import { useRouter } from 'next/navigation';
@@ -45,7 +45,8 @@ const getFileIcon = (fileType: string) => {
 const SingleLessonClientContent: React.FC<SingleLessonClientContentProps> = ({lessonID}) => {
     const {user} = useUser();
     const {data: lesson, isLoading, isError, error} = useGetLesson(lessonID);
-    const { data } = useContenidoIdByType('Leccion', lessonID);
+    const { data: contenidoModuloData, isLoading: isContenidoLoading } = useContenidoIdByType('Leccion', lessonID);
+    const { mutate: addProgressMutation } = useAddProgress();
     const router = useRouter();
     const [messageApi, contextHolder] = message.useMessage();
     const {mutate: deleteLesson} = useDeleteLesson({ messageApi: messageApi});
@@ -94,6 +95,13 @@ const SingleLessonClientContent: React.FC<SingleLessonClientContentProps> = ({le
         }
     }, [editor, lesson?.contenido]);
 
+     useEffect(() => {
+        if (!isContenidoLoading && contenidoModuloData?.contenidoId) {
+            console.log(`Adding progress for ContenidoModulo ID: ${contenidoModuloData.contenidoId}`);
+            addProgressMutation(contenidoModuloData.contenidoId);
+        }
+    }, [contenidoModuloData?.contenidoId, isContenidoLoading, addProgressMutation]);
+
 if (isLoading) {
         return (
             <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -128,26 +136,75 @@ if (isLoading) {
             </div>
         );
     }
+        const getResponsiveYoutubeOpts = () => {
+        const width = window.innerWidth;
+        let playerWidth = 640;
+        let playerHeight = 390;
+
+        if (width < 576) { // xs
+            playerWidth = Math.min(width - 40, 480); 
+            playerHeight = playerWidth * (9 / 16); 
+        } else if (width < 768) { 
+            playerWidth = Math.min(width - 60, 560);
+            playerHeight = playerWidth * (9 / 16);
+        } else if (width < 992) { 
+            playerWidth = Math.min(width - 80, 720);
+            playerHeight = playerWidth * (9 / 16);
+        } else { 
+            playerWidth = 640;
+            playerHeight = 390;
+        }
+
+        return {
+            height: `${playerHeight}`,
+            width: `${playerWidth}`,
+            playerVars: {
+                autoplay: 0,
+            },
+        };
+    };
 
     return (
-        <div style={{ padding: '40px 20px', maxWidth: '900px', margin: '0 auto' }}>
-             {contextHolder}
-            {user?.rol_id === 1 &&
-                <LessonAdminControls 
-                onUpdate={handleUpdate}
-                onDelete={handleDelete}
-            />}
-            <Title level={2} style={{ marginBottom: '15px' }}>{lesson.titulo}</Title>
-            {data?.contenidoId && (
-                <NextContentButton currentContenidoId={data.contenidoId} contentId={lessonID}/>
-            )}
+<div style={{
+            padding: '20px', 
+            maxWidth: '900px',
+            margin: '20px auto', 
+            background: '#fff', 
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            boxSizing: 'border-box', 
+            width: 'calc(100% - 40px)', 
+        }}>             {contextHolder}
+
+        <Space
+            direction={window.innerWidth < 768 ? "vertical" : "horizontal"} 
+            size="middle"
+            style={{ width: '100%', marginBottom: '20px', justifyContent: 'space-between', alignItems: 'flex-start' }}
+            wrap 
+        >
+                {user?.rol_id === 1 && (
+                    <LessonAdminControls
+                        onUpdate={handleUpdate}
+                        onDelete={handleDelete}
+                    />
+                )}
+                {contenidoModuloData?.contenidoId && (
+                    <NextContentButton
+                        currentContenidoId={contenidoModuloData.contenidoId}
+                        courseId={lessonID} 
+                        realCourseID={lesson.curso_id} 
+                    />
+                )}
+            </Space>
+           
+            <Title level={2} style={{ marginBottom: '8px', fontSize: '1.8em' }}>{lesson.titulo}</Title>
             {lesson.tipo && (
                 <Tag color="blue" style={{ marginBottom: '20px' }}>
                     {lesson.tipo}
                 </Tag>
             )}
 
-            <Divider orientation="left">
+            <Divider orientation="left" style={{ margin: '30px 0' }}>
                 <Space><VideoCameraOutlined /> Videos</Space>
             </Divider>
             {lesson.videos && lesson.videos.length > 0 ? (
@@ -156,15 +213,7 @@ if (isLoading) {
                         <div key={video.id} style={{ display: 'flex', justifyContent: 'center' }}>
                             <YouTube
                                 videoId={video.video_id}
-                                opts={{
-                                    height: '390',
-                                    width: '640',
-                                    playerVars: {
-                                        autoplay: 0, // No autoplay by default
-                                    },
-                                }}
-                                // Make it responsive
-                                className="youtube-player-responsive"
+                                opts={getResponsiveYoutubeOpts()}
                             />
                         </div>
                     ))}
@@ -173,19 +222,26 @@ if (isLoading) {
                 <Paragraph type="secondary">No hay videos para esta lección.</Paragraph>
             )}
 
-            <Divider orientation="left">
+            <Divider orientation="left" style={{ margin: '30px 0' }}>
                 <Space><ContainerOutlined /> Contenido de la Lección</Space>
             </Divider>
             {/* Tiptap Rich Text Content */}
             {lesson.contenido ? (
-                 <div className="lesson-content-richtext" style={{ marginBottom: '30px', background: '#f8f8f8', padding: '20px', borderRadius: '8px' }}>
+                 <div className="lesson-content-richtext" style={{
+                        marginBottom: '30px',
+                        background: '#f8f8f8',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        overflowX: 'auto',
+                        wordWrap: 'break-word',
+                    }}>
                     {editor && <EditorContent editor={editor} />}
                  </div>
             ) : (
                 <Paragraph type="secondary">Esta lección no tiene contenido de texto.</Paragraph>
             )}
 
-            <Divider orientation="left">
+            <Divider orientation="left" style={{ margin: '30px 0' }}>
                 <Space><LinkOutlined /> Archivos Adjuntos</Space>
             </Divider>
             {lesson.archivos && lesson.archivos.length > 0 ? (
@@ -203,6 +259,7 @@ if (isLoading) {
                                     download={archivo.nombre} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
+                                    size="small"
                                 >
                                     Descargar
                                 </Button>

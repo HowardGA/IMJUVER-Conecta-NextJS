@@ -43,7 +43,7 @@ const FeaturedAnnouncementsCarousel: React.FC<FeaturedAnnouncementsCarouselProps
     }
 
     if (!announcements || announcements.length === 0) {
-        return null; // Don't render carousel if no featured announcements
+        return null;
     }
 
     const carouselSettings = {
@@ -58,8 +58,8 @@ const FeaturedAnnouncementsCarousel: React.FC<FeaturedAnnouncementsCarouselProps
     };
 
     return (
-        <div style={{ marginBottom: '40px' }}>
-            <Title level={2} style={{ textAlign: 'center', marginBottom: '20px' }}>Anuncios Destacados</Title>
+        <div style={{ marginBottom: '32px' }}>
+            <Title level={2} style={{ textAlign: 'center', marginBottom: '20px', fontSize: '1.8em' }}>Anuncios Destacados</Title>
             <Carousel {...carouselSettings}>
                 {announcements.map((announcement) => (
                     <motion.div
@@ -68,12 +68,19 @@ const FeaturedAnnouncementsCarousel: React.FC<FeaturedAnnouncementsCarouselProps
                         initial="initial"
                         animate="animate"
                         exit="exit" 
-                        style={{ padding: '0 20px' }} 
+                        style={{ padding: '0 8px' }} 
                     >
                         <Card
                             hoverable
-                            style={{ width: '100%', maxWidth: '800px', margin: 'auto', display: 'flex', flexDirection: 'column' }}
-                            bodyStyle={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+                            style={{ width: '100%', maxWidth: '800px', margin: 'auto' }}
+                            styles={{
+                                body: {
+                                    padding: '16px',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'space-between'
+                                }
+                            }}
                         >
                             <Row gutter={[16, 16]} align="middle">
                                 <Col xs={24} md={10}>
@@ -81,28 +88,32 @@ const FeaturedAnnouncementsCarousel: React.FC<FeaturedAnnouncementsCarouselProps
                                         <Image
                                             src={announcement.imagen_url}
                                             alt={announcement.titulo}
-                                            style={{ width: '100%', maxHeight: '300px', objectFit: 'cover', borderRadius: '8px' }}
-                                            preview={false} // Disable image preview on click
+                                            style={{
+                                                width: '100%',
+                                                maxHeight: '250px', 
+                                                objectFit: 'cover',
+                                                borderRadius: '8px',
+                                                marginBottom: '8px', 
+                                            }}                       
+                                            preview={false} 
                                         />
                                     )}
                                 </Col>
                                 <Col xs={24} md={14}>
-                                    <Title level={3} ellipsis={{ rows: 2 }}>{announcement.titulo}</Title>
-                                    <Paragraph type="secondary">
+                                    <Title level={3} ellipsis={{ rows: 2 }} style={{ fontSize: '1.5em' }}>{announcement.titulo}</Title>
+                                   <Paragraph type="secondary" style={{ fontSize: '0.9em' }}>
                                         Categoría: {announcement.categoria?.nombre || 'General'}
                                     </Paragraph>
                                     {announcement.fecha_evento && (
-                                        <Paragraph strong>
+                                       <Paragraph strong style={{ fontSize: '0.9em' }}>
                                             Fecha del evento: {dayjs(announcement.fecha_evento).format('DD/MM/YYYY HH:mm')}
                                         </Paragraph>
                                     )}
-                                    <Paragraph ellipsis={{ rows: 3 }}>
-                                        {/* Assuming 'contenido' is a JSON object with a text field or similar.
-                                            If it's a rich text editor output, you might need dangerouslySetInnerHTML or a parser. */}
+                                    <Paragraph ellipsis={{ rows: 3 }} style={{ fontSize: '0.9em', wordBreak: 'break-word' }}>
                                         {typeof announcement.contenido === 'object' && announcement.contenido !== null && 'text' in announcement.contenido ? (announcement.contenido as { text: string }).text : ''}
                                     </Paragraph>
-                                    <Space size="small">
-                                        <Text type="secondary">Publicado por: {announcement.autor?.nombre}</Text>
+                                    <Space size="small" style={{ marginTop: '8px' }}> 
+                                        <Text type="secondary" style={{ fontSize: '0.85em' }}>Publicado por: {announcement.autor?.nombre}</Text>
                                     </Space>
                                 </Col>
                             </Row>

@@ -35,3 +35,11 @@ export interface RoleData {
     nombre: string;
     descripcion: string | null;
 }
+
+export interface CreateManagerUserDto {
+  nombre: string;
+  email: string;
+  password: string;
+  rol_id: number;
+  estado?: boolean;
+}

@@ -6,6 +6,8 @@ import QueryProvider from '@/components/providers/QueryProvider';
 import ThemeProvider from '@/components/providers/ThemeProvider';
 import './globals.css';
 import { UserProvider } from '@/components/providers/UserProvider';
+import { App, ConfigProvider } from 'antd'; 
+import { MessageProvider } from '@/components/providers/MessageProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,13 +20,19 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
     <html lang="en">
       <body className={inter.className}>
         <StyledComponentsRegistry>
-          <ThemeProvider>
-            <QueryProvider>
-                <UserProvider>
-                  {children}
-                </UserProvider>
-            </QueryProvider>
-          </ThemeProvider>
+          <ConfigProvider>
+            <App>
+              <MessageProvider>
+                <ThemeProvider>
+                  <QueryProvider>
+                      <UserProvider>
+                        {children}
+                      </UserProvider>
+                  </QueryProvider>
+                </ThemeProvider>
+              </MessageProvider>
+            </App>
+          </ConfigProvider>
         </StyledComponentsRegistry>
       </body>
     </html>

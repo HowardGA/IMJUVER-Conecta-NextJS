@@ -19,17 +19,28 @@ const LessonAdminControls: React.FC<LessonAdminControlsProps> = ({
   };
 
   return (
-    <Space style={{ marginBottom: 20 }}>
+    <Space
+        direction={window.innerWidth < 576 ? "vertical" : "horizontal"}
+        size="middle"
+        style={{
+            marginBottom: 20,
+            width: '100%', 
+            justifyContent: 'center',
+            flexWrap: 'wrap', 
+        }}
+    >
       {contextHolder}
-      <Button 
-        type="primary" 
-        icon={<EditOutlined />} 
+      <Button
+        type="primary"
+        icon={<EditOutlined />}
         onClick={onUpdate}
         loading={isLoading}
+        block={window.innerWidth < 576}
+        size="large" 
       >
         Editar Lección
       </Button>
-      
+
       <Popconfirm
         title="¿Estás seguro de eliminar esta lección?"
         description="Esta acción no se puede deshacer."
@@ -37,10 +48,12 @@ const LessonAdminControls: React.FC<LessonAdminControlsProps> = ({
         cancelText="Cancelar"
         onConfirm={handleDelete}
       >
-        <Button 
-          danger 
+        <Button
+          danger
           icon={<DeleteOutlined />}
           loading={isLoading}
+          block={window.innerWidth < 576}
+          size="large" 
         >
           Eliminar Lección
         </Button>

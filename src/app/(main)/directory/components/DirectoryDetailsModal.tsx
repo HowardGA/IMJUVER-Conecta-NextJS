@@ -1,9 +1,10 @@
-import { Modal, Descriptions, Button, Form, Input, Select, message } from 'antd';
+import { Modal, Descriptions, Button, Form, Input, Select, Popconfirm } from 'antd';
 import { useUpdateDirectorio, useDeleteDirectorio } from '@/hooks/directorioHooks';
 import { Directorio, UpdateDirectorioDto } from '@/interfaces/directorioInterface';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/apiClient';
+import { useMessage } from '@/components/providers/MessageProvider';
 
 const { TextArea } = Input;
 const { Item } = Descriptions;
@@ -23,6 +24,7 @@ export default function DirectoryDetailsModal({ contact, onClose }: DirectoryDet
   const [isEditing, setIsEditing] = useState(false);
   const updateMutation = useUpdateDirectorio();
   const deleteMutation = useDeleteDirectorio();
+  const message = useMessage();
 
   const { data: categories } = useQuery<CategoryOption[]>({
     queryKey: ['directorio-categories'],
@@ -50,47 +52,59 @@ export default function DirectoryDetailsModal({ contact, onClose }: DirectoryDet
       console.error('Error de validación:', error);
     }
   };
-
-  const handleDelete = () => {
-    Modal.confirm({
-      title: 'Confirmar eliminación',
-      content: '¿Estás seguro de que deseas eliminar esta entrada?',
-      okText: 'Eliminar',
-      okType: 'danger',
-      cancelText: 'Cancelar',
-      onOk: () => {
-        deleteMutation.mutate(contact!.dir_id, {
-          onSuccess: () => {
-            message.success('Entrada eliminada correctamente');
-            onClose();
-          },
-          onError: () => {
-            message.error('Error al eliminar la entrada');
-          }
-        });
-      },
-    });
-  };
-
   if (!contact) return null;
 
   return (
     <Modal
-      title={contact.nombre}
+      title={isEditing ? `Editar: ${contact.nombre}` : contact.nombre}
       open={true}
       onCancel={onClose}
-      footer={[
-        <Button 
-          key="delete" 
-          danger 
-          onClick={handleDelete}
-          loading={deleteMutation.isPending}
+       footer={[
+        <Popconfirm
+          key="delete-popconfirm"
+          title="Confirmar eliminación"
+          description="¿Estás seguro de que deseas eliminar esta entrada?"
+          onConfirm={() => {
+            if (!contact?.dir_id) {
+              message.error('ID de la entrada no encontrado para eliminar.');
+              return;
+            }
+            deleteMutation.mutate(contact.dir_id, {
+              onSuccess: () => {
+                message.success('Entrada eliminada correctamente');
+                onClose();
+              },
+              onError: (error) => {
+                message.error(`Error al eliminar la entrada: ${error.message || 'Error desconocido'}`);
+              }
+            });
+          }}
+          okText="Eliminar"
+          cancelText="Cancelar"
+          okButtonProps={{ danger: true }}
+          placement="topRight"
         >
-          Eliminar
+          <Button
+            danger
+            loading={deleteMutation.isPending}
+            style={{ float: 'left' }} 
+          >
+            Eliminar
+          </Button>
+        </Popconfirm>,
+        <Button key="cancel" onClick={() => {
+            if (isEditing) {
+                setIsEditing(false);
+                form.resetFields(); 
+            } else {
+                onClose();
+            }
+        }}>
+          {isEditing ? 'Cancelar edición' : 'Cerrar'}
         </Button>,
-        <Button 
-          key="edit" 
-          type="primary" 
+        <Button
+          key="edit-save"
+          type="primary"
           onClick={() => isEditing ? handleUpdate() : setIsEditing(true)}
           loading={updateMutation.isPending}
         >
@@ -98,6 +112,7 @@ export default function DirectoryDetailsModal({ contact, onClose }: DirectoryDet
         </Button>,
       ]}
       width={800}
+      style={{ top: 20 }}
     >
       {isEditing ? (
         <Form
@@ -166,17 +181,20 @@ export default function DirectoryDetailsModal({ contact, onClose }: DirectoryDet
           </Form.Item>
         </Form>
       ) : (
-        <Descriptions column={1} bordered>
-          <Item label="Descripción">{contact.descripcion}</Item>
+        <Descriptions
+         column={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 1 }}
+         bordered
+        size="small">
+          <Item label="Descripción" style={{ wordBreak: 'break-word' }}>{contact.descripcion}</Item>
           <Item label="Categoría">{contact.categoria.nombre}</Item>
           <Item label="Teléfono">{contact.telefono}</Item>
-          <Item label="Horarios">{contact.horarios}</Item>
+          <Item label="Horarios" style={{ wordBreak: 'break-word' }}>{contact.horarios}</Item>
           {contact.url && (
-            <Item label="Enlace">
+            <Descriptions.Item label="Enlace" style={{ wordBreak: 'break-word' }}>
               <a href={contact.url} target="_blank" rel="noopener noreferrer">
                 {contact.url}
               </a>
-            </Item>
+            </Descriptions.Item>
           )}
         </Descriptions>
       )}

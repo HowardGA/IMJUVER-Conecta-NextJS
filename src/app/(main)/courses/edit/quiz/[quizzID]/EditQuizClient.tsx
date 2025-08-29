@@ -111,15 +111,25 @@ const EditQuizClient: React.FC<EditQuizClientProps> = ({ quizId }) => {
     return (
         <App>
             {contextHolder}
-            <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto', backgroundColor: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderRadius: '8px' }}>
-                <Title level={2} style={{ marginBottom: '30px', textAlign: 'center' }}>Editar Cuestionario</Title>
+ <div style={{
+                padding: '20px',
+                maxWidth: '900px',
+                margin: '20px auto',
+                backgroundColor: '#fff',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                borderRadius: '8px',
+                boxSizing: 'border-box',
+                width: 'calc(100% - 40px)',
+            }}>
+                <Title level={2} style={{ marginBottom: '20px', textAlign: 'center', fontSize: '1.8em' }}>
+                    Editar Cuestionario</Title>
                 <Form
                     form={form}
                     layout="vertical"
                     onFinish={onFinish}
                     scrollToFirstError
                 >
-                    <Divider orientation="left">Información general</Divider>
+                    <Divider orientation="left" style={{ margin: '30px 0' }}>Información general</Divider>
                     <Form.Item
                         name="titulo"
                         label="Ingresa el título del cuestionario"
@@ -134,7 +144,7 @@ const EditQuizClient: React.FC<EditQuizClientProps> = ({ quizId }) => {
                     >
                         <Input />
                     </Form.Item>
-                    <Divider orientation="left">Preguntas y respuestas</Divider>
+                    <Divider orientation="left" style={{ margin: '30px 0' }}>Preguntas y respuestas</Divider>
                     <Form.List name="preguntas">
                         {(fields, { add, remove }) => (
                             <>
@@ -146,7 +156,7 @@ const EditQuizClient: React.FC<EditQuizClientProps> = ({ quizId }) => {
                                         remove={remove}
                                         reorderQuestions={reorderQuestions}
                                         fieldsLength={fields.length}
-                                        form={form} // Pass form instance
+                                        form={form} 
                                     />
                                 ))}
                                 <Form.Item>
@@ -154,14 +164,14 @@ const EditQuizClient: React.FC<EditQuizClientProps> = ({ quizId }) => {
                                         texto_pregunta: '',
                                         tipo_pregunta: 'SINGLE_CHOICE', 
                                         respuestas: [{ texto_respuesta: '', correcta: false }]
-                                    })} block icon={<PlusOutlined />}>
+                                    })} block icon={<PlusOutlined />} style={{ height: '48px', marginTop: '20px' }} >
                                         Agregar Pregunta
                                     </Button>
                                 </Form.Item>
                             </>
                         )}
                     </Form.List>
-                    <Form.Item style={{ marginTop: '30px', textAlign: 'center' }}>
+                     <Form.Item style={{ marginTop: '40px', textAlign: 'center' }}>
                         <Button
                             type="primary"
                             htmlType="submit"

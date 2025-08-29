@@ -48,8 +48,13 @@ const CoursesGrid: React.FC<CoursesGridProps> = ({ courses, pageSize = 8 }) => {
     };
     if (!courses || courses.length === 0) {
         return (
-            <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-                <Empty
+ <div style={{
+        padding: '20px',
+        maxWidth: '1200px',
+        margin: '20px auto',
+        boxSizing: 'border-box',
+        width: 'calc(100% - 40px)',
+    }}>                <Empty
                     description="No hay cursos disponibles en este momento."
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
                 />
@@ -57,25 +62,35 @@ const CoursesGrid: React.FC<CoursesGridProps> = ({ courses, pageSize = 8 }) => {
         );
     }
 
-    return (
-        <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' }}>
-            <motion.div
-                key={currentPage} 
-                initial="hidden"
-                animate="visible"
-                variants={containerVariants}
+   return (
+    <div style={{
+        padding: '20px',
+        maxWidth: '1200px',
+        margin: '20px auto',
+        boxSizing: 'border-box',
+        width: 'calc(100% - 40px)',
+    }}>
+        <motion.div
+            key={currentPage}
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+        >
+            <Row
+                gutter={[16, 16]}
+                justify="center" 
             >
-                <Row gutter={[24, 24]} justify="center">
-                    {currentCourses.map((course) => (
-                        <Col
-                            key={course.curs_id}
-                            xs={24}
-                            sm={12}
-                            md={8}
-                            lg={6}
-                        >
-                            <motion.div variants={itemVariants}>
-                                <Link href={`/courses/${course.curs_id}`} passHref style={{ textDecoration: 'none' }}>
+                {currentCourses.map((course) => (
+                    <Col
+                        key={course.curs_id}
+                        xs={24}  
+                        sm={12}  
+                        md={8}   
+                        lg={6}   
+                       
+                    >
+                        <motion.div variants={itemVariants}>
+                            <Link href={`/courses/${course.curs_id}`} passHref style={{ textDecoration: 'none' }}>
                                 <CoursesCard
                                     courseID={course.curs_id}
                                     title={course.titulo}
@@ -85,26 +100,27 @@ const CoursesGrid: React.FC<CoursesGridProps> = ({ courses, pageSize = 8 }) => {
                                     level={course.nivel}
                                     category={course.categoria?.nombre}
                                 />
-                                </Link> 
-                            </motion.div>
-                        </Col>
-                    ))}
-                </Row>
-            </motion.div>
-            {courses.length > pageSize && (
-                <div style={{ textAlign: 'center', marginTop: '40px' }}>
-                    <Pagination
-                        current={currentPage}
-                        pageSize={pageSize}
-                        total={courses.length}
-                        onChange={handlePageChange}
-                        showSizeChanger={false}
-                        showQuickJumper={false}
-                    />
-                </div>
-            )}
-        </div>
-    );
+                            </Link>
+                        </motion.div>
+                    </Col>
+                ))}
+            </Row>
+        </motion.div>
+        {courses.length > pageSize && (
+            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+                <Pagination
+                    current={currentPage}
+                    pageSize={pageSize}
+                    total={courses.length}
+                    onChange={handlePageChange}
+                    showSizeChanger={false}
+                    showQuickJumper={false}
+                    style={{ overflowX: 'auto', paddingBottom: '5px' }} 
+                />
+            </div>
+        )}
+    </div>
+);
 };
 
 export default CoursesGrid;

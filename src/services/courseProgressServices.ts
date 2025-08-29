@@ -47,4 +47,9 @@ export const getContenidoIdByType = async ( tipo: 'Leccion' | 'Cuestionario', id
   return response.data;
 };
 
+export const markProgressCompleted = async (contenidoId: number) => {
+  const response = await apiClient.patch(`/progress/completed/${contenidoId}`);
+  return response.data;
+}
+
 

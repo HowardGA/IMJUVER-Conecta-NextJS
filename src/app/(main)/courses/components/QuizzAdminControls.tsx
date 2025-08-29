@@ -18,18 +18,29 @@ const [messageApi, contextHolder] = message.useMessage();
     onDelete();
   };
 
-  return (
-    <Space style={{ marginBottom: 20 }}>
-        {contextHolder}
-      <Button 
-        type="primary" 
-        icon={<EditOutlined />} 
+ return (
+    <Space
+        direction={window.innerWidth < 576 ? "vertical" : "horizontal"}
+        size="middle"
+        style={{
+            marginBottom: 20,
+            width: '100%', 
+            justifyContent: 'center',
+            flexWrap: 'wrap', 
+        }}
+    >
+      {contextHolder}
+      <Button
+        type="primary"
+        icon={<EditOutlined />}
         onClick={onUpdate}
         loading={isLoading}
+        block={window.innerWidth < 576} 
+        size="large"
       >
         Editar Cuestionario
       </Button>
-      
+
       <Popconfirm
         title="¿Estás seguro de eliminar este cuestionario?"
         description="Esta acción no se puede deshacer."
@@ -37,10 +48,12 @@ const [messageApi, contextHolder] = message.useMessage();
         cancelText="Cancelar"
         onConfirm={handleDelete}
       >
-        <Button 
-          danger 
+        <Button
+          danger
           icon={<DeleteOutlined />}
           loading={isLoading}
+          block={window.innerWidth < 576} 
+          size="large" 
         >
           Eliminar Cuestionario
         </Button>

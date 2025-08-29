@@ -1,6 +1,6 @@
-import { Card, Row, Col } from 'antd';
+import { Card, Row, Col, Typography } from 'antd';
 import { Directorio } from '@/interfaces/directorioInterface';
-
+const {Text} = Typography
 interface DirectoryCardProps {
     directorio: Directorio;
     onClick: () => void;
@@ -11,11 +11,12 @@ export default function DirectoryCard({ directorio, onClick }: DirectoryCardProp
         <Card
             hoverable
             onClick={onClick}
-            title={directorio.nombre}
-            style={{
-                height: '12rem',
+            title={<Text strong style={{ fontSize: '1.1em' }}>{directorio.nombre}</Text>}
+             style={{
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
+                marginBottom: '16px', 
             }}
             styles={{
                 body: {
@@ -25,25 +26,26 @@ export default function DirectoryCard({ directorio, onClick }: DirectoryCardProp
                     padding: '16px',
                 }
             }}
-
         >
-
-            <div style={{
-                flex: 1,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: 'vertical',
-                marginBottom: '8px',
-            }}>
+            <div 
+             style={{
+                    flex: 1,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3, 
+                    WebkitBoxOrient: 'vertical',
+                    marginBottom: '8px',
+                    fontSize: '0.9em', 
+                }}
+           >
                 {directorio.descripcion}
             </div>
-            <Row justify='center' align='bottom'>
-                <Col span={12}>
+            <Row justify='start' gutter={[8, 8]} style={{ marginTop: 'auto' }} wrap>
+                <Col  xs={24} sm={12}>
                     <strong>Categoría:</strong> {directorio.categoria.nombre|| 'N/A'}
                 </Col>
-                 <Col span={12}>
+                 <Col xs={24} sm={12}>
                     <strong>Telefono:</strong> {directorio.telefono|| 'N/A'}
                 </Col>
             </Row>

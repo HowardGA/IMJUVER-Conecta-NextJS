@@ -13,12 +13,12 @@ export default function JobsGrid({ offers }: JobsGridProps) {
 
   return (
     <>
-      <Row gutter={[16, 16]} justify='center' style={{padding: '2rem'}}>
+      <Row gutter={[16, 16]} justify='center' style={{padding: '1rem'}}> 
         {offers.map((offer) => (
-          <Col key={offer.of_id} xs={24} sm={12} lg={8}>
-            <JobCard 
-              offer={offer} 
-              onClick={() => setSelectedOffer(offer)} 
+          <Col key={offer.of_id} xs={24} sm={12} lg={8}> 
+            <JobCard
+              offer={offer}
+              onClick={() => setSelectedOffer(offer)}
             />
           </Col>
         ))}

@@ -3,6 +3,7 @@ import { CreateOfertaDto, UpdateOfertaDto } from "@/interfaces/ofertaInterface";
 
 export const getAllOffers = async() => {
     const response = await apiClient.get('/ofertas/');
+    console.log(response.data)
     return response.data;
 }
 

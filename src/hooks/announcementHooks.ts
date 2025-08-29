@@ -2,13 +2,14 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   Publicacion,
   GetPublicacionesFilters,
-  CategoriaPublicacion,
+  CategoriaPublicacion
 } from '@/interfaces/announcementInterface'; 
 import { createAnnouncement, getAnnouncementById,
         getAnnouncements, deleteAnnouncement,
         softDeleteAnnouncement, updateAnnouncement, getAnnouncementCategories,
       getFeaturedAnnouncements } from "@/services/announcementServices";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 
 export const useGetAllAnnouncements = (filters?: GetPublicacionesFilters) => {
@@ -32,10 +33,17 @@ export const useGetSingleAnnouncement = (id: number) => {
   });
 };
 
-
+export interface BackendUpdatePayload {
+    titulo?: string;
+    contenido?: string; 
+    cat_pub_id?: number;
+    visible?: boolean;
+    destacado?: boolean;
+    fecha_evento?: string;
+}
 export const useUpdateAnnouncement = () => {
   const queryClient = useQueryClient();
-  return useMutation<Publicacion, Error, { id: number; data: FormData }>({
+  return useMutation<Publicacion, Error, { id: number; data: BackendUpdatePayload }>({
     mutationFn: ({ id, data }) => updateAnnouncement(id, data),
     onSuccess: (updatedAnnouncement) => {
       queryClient.invalidateQueries({ queryKey: ['announcement', updatedAnnouncement.pub_id] });
@@ -49,11 +57,14 @@ export const useUpdateAnnouncement = () => {
 
 export const useDeleteAnnouncement = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
   return useMutation<{ message: string; announcement: Publicacion }, Error, number>({
     mutationFn: deleteAnnouncement, // This maps to your hard delete service
     onSuccess: (data, id) => {
+      router.push('/announcements');
       queryClient.invalidateQueries({ queryKey: ['announcement', id] }); 
       queryClient.invalidateQueries({ queryKey: ['announcements'] });
+      queryClient.invalidateQueries({ queryKey: ['featuredAnnouncements'] });
     },
     onError: (error) => {
       console.error("Error deleting announcement:", error);

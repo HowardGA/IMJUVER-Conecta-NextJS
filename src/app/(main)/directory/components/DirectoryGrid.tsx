@@ -13,9 +13,17 @@ export default function DirectoryGrid({ directorio }: DirectoryGridProps) {
 
   return (
     <>
-      <Row gutter={[16, 16]} justify='center' style={{padding: '2rem'}}>
+      <Row gutter={[16, 16]} justify='center' style={{padding: '1rem'}}>
         {directorio.map((contacto) => (
-          <Col key={contacto.dir_id} xs={24} sm={12} lg={8}>
+           <Col
+            key={contacto.dir_id}
+            xs={24} 
+            sm={12} 
+            md={8}  
+            lg={6}  
+            xl={4} 
+            style={{ display: 'flex' }} 
+          >
             <DirectoryCard 
               directorio={contacto} 
               onClick={() => setSelectedContact(contacto)} 

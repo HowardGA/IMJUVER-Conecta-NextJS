@@ -195,17 +195,23 @@ const EmailConfirmationClient: React.FC<EmailConfirmationClientProps> = ({ token
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+        padding: '20px', 
+        boxSizing: 'border-box', 
       }}
     >
       {contextHolder}
       <Card
         variant='borderless'
         style={{
-          width: '35rem',
+          width: '100%',
+          maxWidth: '560px',
           padding: '2rem',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
           borderRadius: '8px',
           textAlign: 'center',
+          margin: '20px auto',
+          boxSizing: 'border-box',
         }}
       >
         {renderContent()}

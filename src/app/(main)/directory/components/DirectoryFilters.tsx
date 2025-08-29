@@ -24,7 +24,7 @@ export default function DirectoryFilters({
       <Select
         value={selectedCategory}
         onChange={onCategoryChange}
-        style={{ width: 200 }}
+        style={{ width: '100%' }}
         placeholder="Todas las categorias"
         allowClear
       >

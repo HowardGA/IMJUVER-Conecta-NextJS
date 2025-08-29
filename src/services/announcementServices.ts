@@ -3,8 +3,9 @@ import apiClientForm from '@/lib/apiClientForm';
 import {
   Publicacion,
   GetPublicacionesFilters,
-  CategoriaPublicacion
-} from '@/interfaces/announcementInterface'; 
+  CategoriaPublicacion, 
+} from '@/interfaces/announcementInterface';
+import { BackendUpdatePayload} from '../hooks/announcementHooks' 
 
 export const createAnnouncement = async (formData: FormData): Promise<Publicacion> => {
   const response = await apiClientForm.post<Publicacion>(
@@ -19,7 +20,7 @@ export const createAnnouncement = async (formData: FormData): Promise<Publicacio
 
 export const updateAnnouncement = async (
   id: number,
-  data: FormData
+  data: BackendUpdatePayload
 ): Promise<Publicacion> => {
     const response = await apiClient.patch<Publicacion>(`/announcements/${id}`, data);
     return response.data;

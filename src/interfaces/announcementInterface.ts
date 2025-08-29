@@ -1,19 +1,36 @@
+// Define interfaces for Imagen and Recurso models directly, as they will now be arrays
+export interface Imagen {
+  img_id: number;
+  url: string; // This will be the full URL (e.g., http://localhost:3000/uploads/images/abc.png)
+  fecha_creacion: string;
+  fecha_modificacion: string;
+}
 
+export interface Recurso {
+  rec_id: number;
+  url: string; // This will be the full URL
+  titulo?: string; // Resources now have a title
+  descripcion?: string; // Resources now have a description
+  fecha_creacion: string;
+  fecha_modificacion: string;
+}
+
+// Keep Tiptap interfaces as they are, assuming content structure doesn't change
 interface TiptapNodeAttributes {
   [key: string]: unknown;
 }
 
 interface TiptapTextMark {
-  type: string; 
-  attrs?: TiptapNodeAttributes; 
+  type: string;
+  attrs?: TiptapNodeAttributes;
 }
 
 interface TiptapNode {
-  type: string; 
+  type: string;
   attrs?: TiptapNodeAttributes;
   content?: TiptapNode[];
   text?: string;
-  marks?: TiptapTextMark[]; 
+  marks?: TiptapTextMark[];
 }
 
 export interface TiptapContent {
@@ -21,27 +38,18 @@ export interface TiptapContent {
   content?: TiptapNode[];
 }
 
+
 export interface Publicacion {
   pub_id: number;
   titulo: string;
   contenido: string; 
-  fecha_creacion: string; 
-  fecha_modificacion: string; 
+  fecha_creacion: string;
+  fecha_modificacion: string;
   fecha_evento?: string;
   cat_pub_id: number;
   categoria?: {
     cat_pub_id: number;
     nombre: string;
-  };
-  img_id?: number | null;
-  imagen?: {
-    img_id: number;
-    url: string;
-  };
-  recursos_id?: number | null;
-  recurso?: {
-    rec_id: number;
-    url: string;
   };
   autor_id: number;
   autor?: {
@@ -50,9 +58,10 @@ export interface Publicacion {
   };
   visible: boolean;
   destacado: boolean;
-  imagen_url?:string,
-  recurso_url?:string;
-
+  imagenes?: Imagen[];
+  recursos?: Recurso[];
+  imagen_url?: string;
+  main_image_data?: Imagen;
 }
 
 export interface CreatePublicacionDto {
@@ -63,8 +72,8 @@ export interface CreatePublicacionDto {
   visible?: boolean;
   destacado?: boolean;
   fecha_evento?: string;
-  imagen?: File;
-  recurso?: File;
+  imagenes?: File[]; 
+  recursos?: File[]; 
 }
 
 export interface CategoriaPublicacion {
@@ -83,11 +92,22 @@ export interface GetPublicacionesFilters {
 
 export interface UpdatePublicacionDto extends Partial<Omit<CreatePublicacionDto, 'autor_id'>> {
   titulo?: string;
-  contenido?: TiptapContent;
+  contenido?: TiptapContent; 
   cat_pub_id?: number;
   visible?: boolean;
   destacado?: boolean;
   fecha_evento?: string;
-  imagen?: File; 
-  recurso?: File;
+  imagenes?: File[];
+  recursos?: File[];
+}
+
+export interface UpdatePublicacionDto2 {
+  titulo?: string;
+  contenido?: string; 
+  cat_pub_id?: number;
+  visible?: boolean;
+  destacado?: boolean;
+  fecha_evento?: string;
+  imagenes?: File[];
+  recursos?: File[];
 }

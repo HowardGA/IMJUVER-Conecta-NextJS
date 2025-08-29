@@ -150,8 +150,17 @@ const EditLessonClient: React.FC<EditLessonClientProps> = ({ lessonId }) => {
   return (
     <App>
       {contextHolder}
-      <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>
-        <Title level={2} style={{ marginBottom: '30px', textAlign: 'center' }}>
+     <div style={{
+          padding: '20px', 
+          maxWidth: '900px',
+          margin: '20px auto',
+          backgroundColor: '#fff',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          borderRadius: '8px',
+          boxSizing: 'border-box', 
+          width: 'calc(100% - 40px)',
+      }}>
+        <Title level={2} style={{ marginBottom: '20px', textAlign: 'center', fontSize: '1.8em' }}> 
           Editar Lección
         </Title>
 
@@ -169,7 +178,7 @@ const EditLessonClient: React.FC<EditLessonClientProps> = ({ lessonId }) => {
             <Input placeholder="Ej: Variables y Tipos de Datos" />
           </Form.Item>
 
-          <Divider orientation="left">Contenido de la Lección (Texto)</Divider>
+          <Divider orientation="left" style={{ margin: '30px 0' }}>Contenido de la Lección (Texto)</Divider> 
           <Form.Item label="Editor de Contenido">
             <TiptapEditor
               initialContent={editorContent || { type: 'doc', content: [] }}
@@ -177,24 +186,28 @@ const EditLessonClient: React.FC<EditLessonClientProps> = ({ lessonId }) => {
             />
           </Form.Item>
 
-          <Divider orientation="left">Videos de YouTube</Divider>
+          <Divider orientation="left" style={{ margin: '30px 0' }}>Videos de YouTube</Divider> 
           <Form.Item label="Añadir Video de YouTube">
-            <Space>
+            <Space
+                direction={window.innerWidth < 576 ? "vertical" : "horizontal"} 
+                size="small" 
+                style={{ width: '100%' }} 
+            >
               <Input
                 placeholder="Pegar URL o ID de YouTube"
                 value={youtubeInput}
                 onChange={(e) => setYoutubeInput(e.target.value)}
-                style={{ width: 300 }}
+                style={{ width: '100%' }}
                 prefix={<YoutubeOutlined />}
               />
-              <Button type="dashed" onClick={handleAddYouTubeVideo} icon={<PlusOutlined />}>
+              <Button type="dashed" onClick={handleAddYouTubeVideo} icon={<PlusOutlined />} block={window.innerWidth < 576}>
                 Añadir
               </Button>
             </Space>
             {videoIds.length > 0 && (
               <div style={{ marginTop: '10px' }}>
                 <Text strong>Videos Añadidos:</Text>
-                <Space wrap style={{ marginTop: '5px' }}>
+                <Space wrap style={{ marginTop: '5px' }}> 
                   {videoIds.map(id => (
                     <Tag
                       key={id}
@@ -210,7 +223,7 @@ const EditLessonClient: React.FC<EditLessonClientProps> = ({ lessonId }) => {
             )}
           </Form.Item>
 
-          <Divider orientation="left">Archivos Adjuntos</Divider>
+          <Divider orientation="left" style={{ margin: '30px 0' }}>Archivos Adjuntos</Divider>
           <Form.Item
             name="archivos" 
             label="Subir Archivos (PDF, PPT, Excel, etc.)"
@@ -221,7 +234,7 @@ const EditLessonClient: React.FC<EditLessonClientProps> = ({ lessonId }) => {
                 <Text strong>Archivos existentes:</Text>
                 <ul>
                   {existingFiles.map(file => (
-                    <li key={file.id}>
+                   <li key={file.id} style={{ wordBreak: 'break-word' }}>
                       <a href={file.url} target="_blank" rel="noopener noreferrer">
                         {file.nombre}
                       </a>
@@ -238,17 +251,18 @@ const EditLessonClient: React.FC<EditLessonClientProps> = ({ lessonId }) => {
               accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.rar"
               listType="text"
             >
-              <Button icon={<UploadOutlined />}>Seleccionar Archivos</Button>
+              <Button icon={<UploadOutlined />} block>Seleccionar Archivos</Button>
             </Upload>
           </Form.Item>
 
-          <Form.Item style={{ marginTop: '30px', textAlign: 'center' }}>
+          <Form.Item style={{ marginTop: '40px', textAlign: 'center' }}>
             <Button
               type="primary"
               htmlType="submit"
               size="large"
               icon={<SaveOutlined />}
               loading={updateLessonMutation.isPending}
+              block
             >
               {updateLessonMutation.isPending ? 'Actualizando Lección...' : 'Actualizar Lección'}
             </Button>

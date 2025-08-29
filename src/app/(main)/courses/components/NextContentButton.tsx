@@ -1,42 +1,76 @@
+// NextContentButton.tsx
 'use client';
 import { Button } from 'antd';
 import { useRouter } from 'next/navigation';
-import { useNextContent, useAddProgress } from '@/hooks/useCourseProgress';
+import { useNextContent, useMarkProgressCompleted } from '@/hooks/useCourseProgress';
 
 interface NextContentButtonProps {
-  currentContenidoId: number;
-  contentId: number//this is the quiz or lec id
+  currentContenidoId: number; 
+  courseId: number; 
+  disabled?: boolean; 
+  realCourseID?: number;
 }
 
-const NextContentButton: React.FC<NextContentButtonProps> = ({ currentContenidoId, contentId }) => {
+const NextContentButton: React.FC<NextContentButtonProps> = ({ currentContenidoId, courseId, disabled = false, realCourseID }) => {
   const router = useRouter();
-  const { data: nextContent, isLoading, error } = useNextContent(currentContenidoId);
-  const {mutate: addProgress} = useAddProgress();
+  const { data: nextContentData, isLoading: isNextContentLoading, error: nextContentError } = useNextContent(currentContenidoId);
+  const { mutate: markCompletedMutation, isPending: isMarkingCompleted } = useMarkProgressCompleted();
 
-  const handleNext = () => {
-    if (!nextContent) {
-      console.warn('No hay siguiente contenido disponible.');
+  const handleNext = async () => {
+    if (isNextContentLoading || isMarkingCompleted) {
+        return;
+    }
+
+    try {
+      await markCompletedMutation(currentContenidoId);
+      console.log(`Content ${currentContenidoId} marked as completed.`);
+    } catch (completionError) {
+      console.error('Error marking current content as completed:', completionError);
+    }
+    if (!nextContentData || nextContentError) {
+      console.warn('No hay siguiente contenido disponible o hubo un error al cargarlo.');
+      router.push(`/courses/${courseId}/finished`);
       return;
     }
 
-    if (nextContent.fin) {
-      router.push('/courses/completed');
+    if (nextContentData.fin) {
+      console.log(realCourseID)
+      router.push(`/courses/${realCourseID}/completed`);
       return;
     }
 
-    if (nextContent.tipo === 'leccion') {
-      addProgress(currentContenidoId);
-      router.push(`/courses/lessons/${contentId-1}`);
-    } else if (nextContent.tipo === 'Cuestionario') {
-      addProgress(currentContenidoId);
-      router.push(`/courses/quizzes/${contentId+2}`);
+    let nextRoute = '';
+    if (nextContentData.tipo === 'leccion') {
+      if (nextContentData.leccionId) {
+        nextRoute = `/courses/lessons/${nextContentData.leccionId}`;
+      } else {
+        console.error('Next content is a lesson but missing lec_id:', nextContentData);
+        return;
+      }
+    } else if (nextContentData.tipo === 'Cuestionario') { 
+      if (nextContentData.quizId) {
+        nextRoute = `/courses/quizzes/${nextContentData.quizId}`;
+      } else {
+        console.error('Next content is a quiz but missing quiz_id:', nextContentData);
+        return;
+      }
     } else {
-      console.warn(`Tipo de contenido desconocido: ${nextContent.tipo}`);
+      console.warn(`Tipo de contenido desconocido para el siguiente: ${nextContentData.tipo}`);
+      return;
+    }
+
+    if (nextRoute) {
+      router.push(nextRoute);
     }
   };
 
   return (
-    <Button type="primary" loading={isLoading} onClick={handleNext} disabled={!!error}>
+    <Button
+      type="primary"
+      loading={isNextContentLoading || isMarkingCompleted}
+      onClick={handleNext}
+      disabled={disabled || !!nextContentError || isNextContentLoading || isMarkingCompleted}
+    >
       Siguiente
     </Button>
   );

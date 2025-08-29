@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { Row, Col, Typography, Empty } from 'antd';
 import AnnouncementCard from './AnnouncementCard';
@@ -7,38 +5,42 @@ import { Publicacion } from '@/interfaces/announcementInterface';
 import { useRouter } from 'next/navigation';
 
 const { Title } = Typography;
+
 interface AnnouncementGridProps {
-  announcements: Publicacion[]
+  announcements: Publicacion[];
 }
 
-const AnnouncementGrid: React.FC<AnnouncementGridProps> = (announcements) => {
+const AnnouncementGrid: React.FC<AnnouncementGridProps> = ({ announcements }) => { 
   const router = useRouter();
-  const upcomingEvents = announcements.announcements.filter((event) => {
-  if (!event.fecha_evento) return false;
-  return new Date(event.fecha_evento) > new Date();
-});
+
+  const filteredAnnouncements = announcements.filter((event) => {
+    if (!event.fecha_evento) {
+      return true;
+    }
+    return new Date(event.fecha_evento) > new Date();
+  });
 
   return (
-    <div style={{ padding: '24px' }}>
-      <Title level={2} style={{ textAlign: 'center', marginBottom: '32px' }}>
+    <div style={{ padding: '1rem' }}>
+      <Title level={2} style={{ textAlign: 'center', marginBottom: '24px', fontSize: '1.8em' }}>
         Próximos Eventos y Anuncios
       </Title>
-      {upcomingEvents.length > 0 ? (
+      {filteredAnnouncements.length > 0 ? ( 
         <Row gutter={[24, 24]} justify="center">
-          {upcomingEvents.map(event => (
+          {filteredAnnouncements.map(event => (
             <Col
               key={event.pub_id}
               xs={24}
-              sm={24} 
-              md={12} 
-              lg={8} 
+              sm={24}
+              md={12}
+              lg={8}
               xl={6}
-              style={{ display: 'flex', justifyContent: 'center' }} 
+              style={{ display: 'flex', justifyContent: 'center' }}
             >
               <AnnouncementCard
                 title={event.titulo}
-                imageUrl={event.imagen_url ?? ""}
-                eventDate={new Date(event.fecha_evento!)}
+                imageUrl={event.main_image_data?.url ?? ""}
+                eventDate={event.fecha_evento ? new Date(event.fecha_evento) : undefined}
                 onClick={() => router.push(`/announcements/${event.pub_id}`)}
               />
             </Col>

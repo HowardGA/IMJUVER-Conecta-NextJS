@@ -134,7 +134,14 @@ const AddLessonClient: React.FC<AddLessonClientProps> = ({ courseId }) => {
     return (
         <App>
             {contextHolder}
-            <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>
+            <div style={{  padding: '20px', 
+        maxWidth: '900px', 
+        margin: '20px auto', 
+        backgroundColor: '#fff', 
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        borderRadius: '8px',
+        boxSizing: 'border-box', 
+        width: 'calc(100% - 40px)',  }}>
                 <Title level={2} style={{ marginBottom: '30px', textAlign: 'center' }}>Agregar Nueva Lección</Title>
 
                 <Form

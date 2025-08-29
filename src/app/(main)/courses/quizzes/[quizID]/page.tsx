@@ -1,14 +1,15 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Button, Spin, Alert, Form, Result, Typography, message } from 'antd';
+import { Button, Spin, Alert, Form, Result, Typography, Flex } from 'antd';
 import { useQuizDetails, useSubmitQuiz, useDeleteQuiz } from '@/hooks/useCourses'; 
 import QuizQuestionTaking from '../../components/QuizQuestionTaking'; 
 import { UserSelectedAnswer, QuizSubmissionPayload } from '@/services/courseServices'; 
 import NextContentButton from '../../components/NextContentButton';
-import { useContenidoIdByType } from '@/hooks/useCourseProgress';
+import { useContenidoIdByType, useAddProgress } from '@/hooks/useCourseProgress';
 import { useUser } from "@/components/providers/UserProvider";
 import QuizzAdminControls from '../../components/QuizzAdminControls';
+import { useMessage } from '@/components/providers/MessageProvider';
 
 const { Title, Text } = Typography;
 
@@ -18,11 +19,14 @@ const QuizTakingPage: React.FC = () => {
     const params = useParams();
     const quizIdParam = params.quizID;
     const parsedQuizId = quizIdParam ? parseInt(quizIdParam as string) : 0;
-    const { data } = useContenidoIdByType('Cuestionario', parsedQuizId);
+    const { data: contenidoModuloData, isLoading: isContenidoLoading } = useContenidoIdByType('Cuestionario', parsedQuizId); 
+    const { mutate: addProgressMutation } = useAddProgress();
     const { data: quiz, isLoading, isError, error } = useQuizDetails(parsedQuizId);
     const [userAnswers, setUserAnswers] = useState<UserSelectedAnswer[]>([]);
-    const [messageApi, contextHolder] = message.useMessage();
-    const {mutate: deleteQuiz} = useDeleteQuiz({ messageApi: messageApi});
+    const {mutate: deleteQuiz} = useDeleteQuiz();
+    const [quizPassed, setQuizPassed] = useState<boolean>(false);
+    const PASSING_THRESHOLD = 0.80; // 80%
+    const messageApi = useMessage();
 
     const submitQuizMutation = useSubmitQuiz();
 
@@ -35,6 +39,30 @@ const QuizTakingPage: React.FC = () => {
             setUserAnswers(initialAnswers);
         }
     }, [quiz]); 
+
+     useEffect(() => {
+        if (!isContenidoLoading && contenidoModuloData?.contenidoId) {
+            addProgressMutation(contenidoModuloData.contenidoId);
+        }
+    }, [contenidoModuloData?.contenidoId, isContenidoLoading, addProgressMutation]);
+
+     useEffect(() => {
+        if (submitQuizMutation.isSuccess && submitQuizMutation.data) {
+            const { score, totalQuestions } = submitQuizMutation.data;
+            if (
+                typeof score === 'number' &&
+                typeof totalQuestions === 'number' &&
+                totalQuestions > 0 &&
+                (score / totalQuestions) >= PASSING_THRESHOLD
+            ) {
+                setQuizPassed(true);
+                messageApi.success('¡Cuestionario aprobado! Puedes continuar.');
+            } else {
+                setQuizPassed(false);
+                messageApi.warning(`Necesitas al menos un ${PASSING_THRESHOLD * 100}% para aprobar. Inténtalo de nuevo.`);
+            }
+        }
+    }, [submitQuizMutation.isSuccess, submitQuizMutation.data, messageApi]);
 
     const handleUpdate = () => {
         router.push(`/courses/edit/quiz/${parsedQuizId}`);
@@ -114,21 +142,43 @@ const QuizTakingPage: React.FC = () => {
             />
         );
     }
-
+    const isNextButtonDisabled = !quizPassed;
     return (
-        <div style={{ maxWidth: '800px', margin: '40px auto', padding: '20px', border: '1px solid #eee', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-            {contextHolder}
-             {user?.rol_id === 1 &&
-                <QuizzAdminControls 
-                onUpdate={handleUpdate}
-                onDelete={handleDelete}
-                // isLoading={isProcessing}
-            />}
-            <Title level={2}>{quiz.titulo}</Title>
-             {data?.contenidoId && (
-                <NextContentButton currentContenidoId={data.contenidoId} contentId={parsedQuizId} />
-            )}
-            <Text type="secondary" style={{ marginBottom: '24px', display: 'block' }}>{quiz.descripcion}</Text>
+        <div style={{
+                    maxWidth: '900px', 
+                    margin: '20px auto', 
+                    padding: '16px', 
+                    border: '1px solid #eee',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    backgroundColor: '#fff',
+                    boxSizing: 'border-box', 
+                    width: 'calc(100% - 32px)', 
+                }}>             
+                 <Flex
+                justify="space-between"
+                align="center"
+                wrap="wrap" 
+                gap={16} 
+                style={{ marginBottom: '24px' }}
+            >
+                {user?.rol_id === 1 && (
+                    <QuizzAdminControls
+                        onUpdate={handleUpdate}
+                        onDelete={handleDelete}
+                    />
+                )}
+                {contenidoModuloData?.contenidoId && (
+                    <NextContentButton
+                        currentContenidoId={contenidoModuloData.contenidoId}
+                        courseId={parsedQuizId} 
+                        disabled={isNextButtonDisabled}
+                        realCourseID={quiz.curso_id} 
+                    />
+                )}
+            </Flex>
+            <Title level={2} style={{ marginBottom: '8px', fontSize: '1.8em' }}>{quiz.titulo}</Title>
+            <Text type="secondary" style={{ marginBottom: '24px', display: 'block', fontSize: '1em' }}>{quiz.descripcion}</Text>
 
             <Form layout="vertical">
                 {quiz.preguntas.map((question, index) => (
@@ -137,7 +187,6 @@ const QuizTakingPage: React.FC = () => {
                         question={question}
                         questionIndex={index}
                         onAnswerChange={handleAnswerChange}
-                        // Find the current selected answers for this specific question
                         currentSelectedAnswerIds={
                             userAnswers.find(ans => ans.pregunta_id === question.pregunta_id)?.selected_respuesta_ids || []
                         }

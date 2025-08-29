@@ -99,165 +99,197 @@ const CreateCourseClient: React.FC = () => {
 
 
     return (
-        <App>
-            {contextHolder}
-            <div style={{ padding: '40px', maxWidth: '900px', margin: '0 auto' }}>
-                <Title level={2} style={{ marginBottom: '30px', textAlign: 'center' }}>Crear Nuevo Curso</Title>
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={onFinish}
-                    initialValues={{ modulos: [{ titulo: '', descripcion: '' }] }}
-                    scrollToFirstError
+    <App>
+        {contextHolder}
+        <div style={{
+            padding: '20px', 
+            maxWidth: '900px', 
+            margin: '20px auto', 
+            backgroundColor: '#fff',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            borderRadius: '8px',
+            boxSizing: 'border-box',
+            width: 'calc(100% - 40px)', 
+            
+        }}>
+            <Title level={2} style={{ marginBottom: '20px', textAlign: 'center', fontSize: '1.8em' }}>
+                Crear Nuevo Curso
+            </Title>
+            <Form
+                form={form}
+                layout="vertical" 
+                onFinish={onFinish}
+                initialValues={{ modulos: [{ titulo: '', descripcion: '' }] }}
+                scrollToFirstError
+            >
+                <Divider orientation="left" style={{ margin: '30px 0' }}>Información Básica del Curso</Divider> 
+                <Form.Item
+                    name="titulo"
+                    label="Título del Curso"
+                    rules={[{ required: true, message: 'Por favor, ingrese el título del curso' }]}
                 >
-                    <Divider orientation="left">Información Básica del Curso</Divider>
-                    <Form.Item
-                        name="titulo"
-                        label="Título del Curso"
-                        rules={[{ required: true, message: 'Por favor, ingrese el título del curso' }]}
-                    >
-                        <Input placeholder="Ej: Introducción a la Programación" />
-                    </Form.Item>
+                    <Input placeholder="Ej: Introducción a la Programación" />
+                </Form.Item>
 
-                    <Form.Item
-                        name="descripcion"
-                        label="Descripción del Curso"
-                        rules={[{ required: true, message: 'Por favor, ingrese la descripción del curso' }]}
-                    >
-                        <TextArea rows={4} placeholder="Describa brevemente el contenido del curso..." />
-                    </Form.Item>
+                <Form.Item
+                    name="descripcion"
+                    label="Descripción del Curso"
+                    rules={[{ required: true, message: 'Por favor, ingrese la descripción del curso' }]}
+                >
+                    <TextArea rows={4} placeholder="Describa brevemente el contenido del curso..." />
+                </Form.Item>
 
-                    <Form.Item
-                        name="cat_cursos_id"
-                        label="Categoría"
-                        rules={[{ required: true, message: 'Por favor, seleccione una categoría' }]}
-                    >
-                        <Select placeholder="Selecciona una categoría">
-                            {categories?.map(category => (
-                                <Option key={category.cat_cursos_id} value={category.cat_cursos_id}>
-                                    {category.nombre}
-                                </Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
+                <Form.Item
+                    name="cat_cursos_id"
+                    label="Categoría"
+                    rules={[{ required: true, message: 'Por favor, seleccione una categoría' }]}
+                >
+                    <Select placeholder="Selecciona una categoría" showSearch optionFilterProp="children">
+                        {categories?.map(category => (
+                            <Option key={category.cat_cursos_id} value={category.cat_cursos_id}>
+                                {category.nombre}
+                            </Option>
+                        ))}
+                    </Select>
+                </Form.Item>
 
-                    <Form.Item
-                        name="duracion"
-                        label="Duración (en horas)"
-                        rules={[{ required: true, message: 'Por favor, ingrese la duración del curso' }]}
-                    >
-                        <InputNumber min={1} style={{ width: '100%' }} placeholder="Ej: 40" />
-                    </Form.Item>
+                <Form.Item
+                    name="duracion"
+                    label="Duración (en horas)"
+                    rules={[{ required: true, message: 'Por favor, ingrese la duración del curso' }]}
+                >
+                    <InputNumber min={1} style={{ width: '100%' }} placeholder="Ej: 40" />
+                </Form.Item>
 
-                    <Form.Item
-                        name="nivel"
-                        label="Nivel"
-                        rules={[{ required: true, message: 'Por favor, seleccione el nivel del curso' }]}
-                    >
-                        <Select placeholder="Selecciona el nivel">
-                            <Option value="Básico">Básico</Option>
-                            <Option value="Intermedio">Intermedio</Option>
-                            <Option value="Avanzado">Avanzado</Option>
-                        </Select>
-                    </Form.Item>
+                <Form.Item
+                    name="nivel"
+                    label="Nivel"
+                    rules={[{ required: true, message: 'Por favor, seleccione el nivel del curso' }]}
+                >
+                    <Select placeholder="Selecciona el nivel">
+                        <Option value="Básico">Básico</Option>
+                        <Option value="Intermedio">Intermedio</Option>
+                        <Option value="Avanzado">Avanzado</Option>
+                    </Select>
+                </Form.Item>
 
-                    <Form.Item
+                <Form.Item
+                    name="portada"
+                    label="Imagen de Portada"
+                    valuePropName="fileList"
+                    getValueFromEvent={normFile}
+                    rules={[{ required: true, message: 'Por favor, suba una imagen de portada' }]}
+                >
+                    <Upload
                         name="portada"
-                        label="Imagen de Portada"
-                        valuePropName="fileList"
-                        getValueFromEvent={normFile}
-                        rules={[{ required: true, message: 'Por favor, suba una imagen de portada' }]}
+                        listType="picture"
+                        maxCount={1}
+                        beforeUpload={() => false}
+                        accept="image/*"
                     >
-                        <Upload
-                            name="portada"
-                            listType="picture"
-                            maxCount={1}
-                            beforeUpload={() => false}
-                            accept="image/*"
-                        >
-                            <Button variant="solid" color='lime' icon={<UploadOutlined />}>Seleccionar Archivo</Button>
-                        </Upload>
-                    </Form.Item>
+                        <Button block icon={<UploadOutlined />}>Seleccionar Archivo</Button>
+                    </Upload>
+                </Form.Item>
 
-                    <Divider orientation="left">Módulos del Curso</Divider>
-                    <Form.List name="modulos">
-                        {(fields, { add, remove }) => (
-                            <>
-                                {fields.map(({ key, name, ...restField }, index) => (
-                                    <Space key={key} direction="vertical" style={{ width: '100%', border: '2px dashed var(--ant-color-info )', padding: '16px', marginBottom: '16px', borderRadius: '4px', position: 'relative',  }}>
-                                        <Row gutter={16} align="middle" style={{ width: '100%' }}>
-                                            <Col span={20}>
-                                                <Form.Item
-                                                    {...restField}
-                                                    name={[name, 'titulo']}
-                                                    label={`Título del Módulo ${index + 1}`}
-                                                    rules={[{ required: true, message: 'Título del módulo requerido' }]}
-                                                    style={{ marginBottom: 0 }}
-                                                >
-                                                    <Input placeholder="Ej: Introducción a JavaScript" />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={4} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
-                                                {fields.length > 1 && (
-                                                    <>
-                                                        <Button
-                                                            type="text"
-                                                            icon={<UpOutlined />}
-                                                            onClick={() => reorderModules(index, index - 1)}
-                                                            disabled={index === 0}
-                                                            title="Mover arriba"
-                                                        />
-                                                        <Button
-                                                            type="text"
-                                                            icon={<DownOutlined />}
-                                                            onClick={() => reorderModules(index, index + 1)}
-                                                            disabled={index === fields.length - 1}
-                                                            title="Mover abajo"
-                                                        />
-                                                        <MinusCircleOutlined
-                                                            onClick={() => remove(name)}
-                                                            style={{ fontSize: '20px', color: '#ff4d4f', cursor: 'pointer' }}
-                                                            title="Eliminar módulo"
-                                                        />
-                                                    </>
-                                                )}
-                                            </Col>
-                                        </Row>
-                                        <Form.Item
-                                            {...restField}
-                                            name={[name, 'descripcion']}
-                                            label="Descripción del Módulo"
-                                            rules={[{ required: true, message: 'Descripción del módulo requerida' }]}
-                                            style={{ width: '100%' }}
-                                        >
-                                            <TextArea rows={2} placeholder="Describa el contenido de este módulo..." />
-                                        </Form.Item>
-                                    </Space>
-                                ))}
-                                <Form.Item>
-                                    <Button variant="solid" color='orange' onClick={() => add()} block icon={<PlusOutlined />}>
-                                        Agregar Módulo
-                                    </Button>
-                                </Form.Item>
-                            </>
-                        )}
-                    </Form.List>
+                <Divider orientation="left" style={{ margin: '30px 0' }}>Módulos del Curso</Divider>
+                <Form.List name="modulos">
+                    {(fields, { add, remove }) => (
+                        <>
+                            {fields.map(({ key, name, ...restField }, index) => (
+                                <Space
+                                    key={key}
+                                    direction="vertical"
+                                    style={{
+                                        width: '100%',
+                                        border: '2px dashed var(--ant-color-info)',
+                                        padding: '16px',
+                                        marginBottom: '16px',
+                                        borderRadius: '4px',
+                                        position: 'relative',
+                                    }}
+                                >
+                                    <Row gutter={[16, 8]} align="middle" style={{ width: '100%' }}>
+                                        <Col xs={24} sm={18} md={20}> 
+                                            <Form.Item
+                                                {...restField}
+                                                name={[name, 'titulo']}
+                                                label={`Título del Módulo ${index + 1}`}
+                                                rules={[{ required: true, message: 'Título del módulo requerido' }]}
+                                                style={{ marginBottom: 0 }}
+                                            >
+                                                <Input placeholder="Ej: Introducción a JavaScript" />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col xs={24} sm={6} md={4} style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}> {/* Buttons take full width on xs, 6 on sm, 4 on md+ */}
+                                            {fields.length > 1 && (
+                                                <Space size="small" wrap={window.innerWidth < 576}>
+                                                    <Button
+                                                        type="text"
+                                                        icon={<UpOutlined />}
+                                                        onClick={() => reorderModules(index, index - 1)}
+                                                        disabled={index === 0}
+                                                        title="Mover arriba"
+                                                        size="small"
+                                                    />
+                                                    <Button
+                                                        type="text"
+                                                        icon={<DownOutlined />}
+                                                        onClick={() => reorderModules(index, index + 1)}
+                                                        disabled={index === fields.length - 1}
+                                                        title="Mover abajo"
+                                                        size="small" 
+                                                    />
+                                                    <MinusCircleOutlined
+                                                        onClick={() => remove(name)}
+                                                        style={{ fontSize: '20px', color: '#ff4d4f', cursor: 'pointer' }}
+                                                        title="Eliminar módulo"
+                                                    />
+                                                </Space>
+                                            )}
+                                        </Col>
+                                    </Row>
+                                    <Form.Item
+                                        {...restField}
+                                        name={[name, 'descripcion']}
+                                        label="Descripción del Módulo"
+                                        rules={[{ required: true, message: 'Descripción del módulo requerida' }]}
+                                        style={{ width: '100%' }}
+                                    >
+                                        <TextArea rows={2} placeholder="Describa el contenido de este módulo..." />
+                                    </Form.Item>
+                                </Space>
+                            ))}
+                            <Form.Item>
+                                <Button
+                                    type="dashed" 
+                                    onClick={() => add()}
+                                    block 
+                                    icon={<PlusOutlined />}
+                                    style={{ height: '48px', marginTop: '20px' }}
+                                >
+                                    Agregar Módulo
+                                </Button>
+                            </Form.Item>
+                        </>
+                    )}
+                </Form.List>
 
-                    <Form.Item style={{ marginTop: '30px', textAlign: 'center' }}>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            size="large"
-                            icon={<SaveOutlined />}
-                            loading={createCourseMutation.isPending}
-                        >
-                            {createCourseMutation.isPending ? 'Creando Curso...' : 'Crear Curso'}
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </div>
-        </App>
-    );
+                <Form.Item style={{ marginTop: '40px', textAlign: 'center' }}> 
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        size="large"
+                        icon={<SaveOutlined />}
+                        loading={createCourseMutation.isPending}
+                        block 
+                    >
+                        {createCourseMutation.isPending ? 'Creando Curso...' : 'Crear Curso'}
+                    </Button>
+                </Form.Item>
+            </Form>
+        </div>
+    </App>
+);
 };
 
 export default CreateCourseClient;

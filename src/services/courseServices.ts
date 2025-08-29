@@ -72,6 +72,7 @@ export interface Lesson {
     contenido?: string
     videos?: Video[],
     archivos?: Archivo[],
+    curso_id?: number;
 }
 
 export interface Video {
@@ -126,6 +127,7 @@ export interface QuizForTaking {
     titulo: string;
     descripcion: string;
     preguntas: QuizQuestionForTaking[];
+    curso_id?: number;
 }
 
 export interface UserSelectedAnswer {

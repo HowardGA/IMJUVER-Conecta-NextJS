@@ -78,7 +78,11 @@ if (isLoading) {
     }
 
     return (
-        <>
+        <div style={{ backgroundImage: `url('/background/imjuver-pattern.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed', }}>
             <Hero
                 title="Descubre todos los cursos que se tienen preparados para ti"
                 subTitle="Puedes cursar tantos cursos como desees."
@@ -90,7 +94,7 @@ if (isLoading) {
                 onAddCourse={handleAddCourse}
             />
             <CoursesGrid courses={filteredCourses || []} pageSize={8} />
-        </>
+        </div>
     );
 }
 

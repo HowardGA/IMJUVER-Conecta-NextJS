@@ -1,7 +1,6 @@
-// src/app/announcements/components/AnnouncementsToolbar.tsx
 'use client';
 import React from 'react';
-import { Row, Button, Input, Select, Space } from "antd";
+import { Row, Col, Button, Input, Select } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useGetAllAnnouncementCategories } from "@/hooks/announcementHooks"; 
 import { CategoriaPublicacion } from '@/interfaces/announcementInterface'; 
@@ -33,18 +32,27 @@ const AnnoucementsToolbar: React.FC<AnnoucementsToolbarProps> = ({
     };
 
     return (
-        <Row style={{ width: '100%', padding: '1rem 4rem' }} align='middle' justify='space-between'>
-            <Space>
+        <Row
+            style={{ width: '100%', padding: '1rem' }}
+            align='middle'
+            justify='space-between'
+            gutter={[16, 16]} 
+            wrap 
+        > 
+
+            <Col xs={24} sm={12} lg={8}> 
                 <Input.Search
                     placeholder="Buscar anuncios..."
                     onSearch={handleSearch}
-                    style={{ width: 300 }}
+                    style={{ width: '100%' }}
                     allowClear
                 />
+            </Col>
 
+            <Col xs={24} sm={12} lg={6}> 
                 <Select
                     defaultValue="all"
-                    style={{ width: 200 }}
+                    style={{ width: '100%' }} 
                     onChange={handleCategoryChange}
                     loading={categoriesLoading}
                     placeholder="Seleccionar categoría"
@@ -56,14 +64,20 @@ const AnnoucementsToolbar: React.FC<AnnoucementsToolbarProps> = ({
                         </Option>
                     ))}
                 </Select>
-            </Space>
+            </Col>
 
-        {user?.rol_id === 1 &&
-            <Button type="primary" onClick={onAddAnnouncementClick}>
-                <PlusOutlined/>
-                Crear nuevo anuncio
-            </Button>
-        }
+        {(user?.rol_id === 1 || user?.rol_id === 3 || user?.rol_id === 6) && (
+                <Col xs={24} lg={8}> 
+                    <Button
+                        type="primary"
+                        onClick={onAddAnnouncementClick}
+                        block 
+                    >
+                        <PlusOutlined />
+                        Crear nuevo anuncio
+                    </Button>
+                </Col>
+            )}
         </Row>
     );
 }

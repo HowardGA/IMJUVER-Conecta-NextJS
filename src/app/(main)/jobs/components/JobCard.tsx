@@ -8,6 +8,7 @@ interface JobCardProps {
 }
 
 export default function JobCard({ offer, onClick }: JobCardProps) {
+    const cardColor = offer.mujer ? '#CC66DA' : '#f2c6ab';
     return (
         <Card
             hoverable
@@ -24,6 +25,9 @@ export default function JobCard({ offer, onClick }: JobCardProps) {
                 flexDirection: 'column',
             }}
             styles={{
+                header:{
+                    backgroundColor: `${cardColor}`
+                },
                 body: {
                     flex: 1,
                     display: 'flex',
@@ -33,7 +37,6 @@ export default function JobCard({ offer, onClick }: JobCardProps) {
             }}
 
         >
-
             <div style={{
                 flex: 1,
                 overflow: 'hidden',
@@ -45,11 +48,11 @@ export default function JobCard({ offer, onClick }: JobCardProps) {
             }}>
                 {offer.descripcion}
             </div>
-            <Row justify='center' align='bottom'>
-                <Col span={12}>
+            <Row justify='center' align='bottom' gutter={[8, 8]}> 
+                <Col xs={24} sm={12}>
                     <strong>Categoría:</strong> {offer.categoria?.nombre || 'N/A'}
                 </Col>
-                <Col span={12}>
+                <Col xs={24} sm={12}>
                     <strong>Vence en:</strong> {dayjs(offer.fecha_vigencia).format('MMM D, YYYY')}
                 </Col>
             </Row>

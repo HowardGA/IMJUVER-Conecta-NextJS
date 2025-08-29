@@ -43,31 +43,52 @@ const CourseToolbar: React.FC<CourseToolbarProps> = ({onSearch, onCategoryChange
         return options;
     }, [categories]);
 
-    return(
-        <Row justify="center" gutter={[16, 16]} style={{ padding: '20px' }}>
-            <Col xs={24} sm={12} md={8}>
-                <Input placeholder="Busca por nombre" prefix={<SearchOutlined/>} onChange={handleSearchInputChange} value={searchText} allowClear/>
-            </Col>
-            <Col xs={24} sm={12} md={8}>
-                <Select
-                    placeholder="Filtrar por categoría"
-                    style={{ width: '100%' }}
-                    onChange={handleCategorySelectChange}
-                    loading={isLoading} 
-                    options={categoryOptions}
-                    allowClear
-                />
-            </Col>
-            <Col xs={24} sm={12} md={6}>
-                <Button onClick={onAddCourse}>
-                    <Row align="middle" gutter={4}>
-                        <PlusOutlined/>
-                        <Col>Crear Curso</Col>
-                    </Row>
-                </Button>
-            </Col>
-        </Row>
-    );
+   return (
+    <Row
+        justify="center" 
+        gutter={[16, 16]}
+        style={{
+            padding: '16px', 
+            width: '100%',   
+            maxWidth: '1200px',
+            margin: '0 auto', 
+            boxSizing: 'border-box'
+        }}
+    >
+        <Col xs={24} sm={12} md={8}>
+            <Input
+                placeholder="Busca por nombre"
+                prefix={<SearchOutlined/>}
+                onChange={handleSearchInputChange}
+                value={searchText}
+                allowClear
+                style={{ width: '100%' }} 
+            />
+        </Col>
+        <Col xs={24} sm={12} md={8}> 
+            <Select
+                placeholder="Filtrar por categoría"
+                style={{ width: '100%' }} 
+                onChange={handleCategorySelectChange}
+                loading={isLoading}
+                options={categoryOptions}
+                allowClear
+                showSearch 
+                optionFilterProp="label" 
+            />
+        </Col>
+        <Col xs={24} sm={24} md={6}>
+            <Button
+                onClick={onAddCourse}
+                block={window.innerWidth < 768} 
+                type="primary" 
+                icon={<PlusOutlined/>}
+            >
+                Crear Curso
+            </Button>
+        </Col>
+    </Row>
+);
 }
 
 export default CourseToolbar;

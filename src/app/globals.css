@@ -8,10 +8,19 @@ body {
 }
 
 html {
-  background-color: var(--ant-color-bg-layout);
+  background-image: url('/public/background/imjuver-pattern.png');
 }
 
 body {
-  background-color: var(--ant-color-bg-layout);
+  background-image: url('/public/background/imjuver-pattern.png');
   color: var(--ant-color-text-base);
+}
+
+.pattern {
+  background-image: url('/public/background/imjuver-pattern.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  background-attachment: fixed;
 }

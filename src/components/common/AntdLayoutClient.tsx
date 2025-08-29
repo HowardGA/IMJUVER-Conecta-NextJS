@@ -17,14 +17,17 @@ const AntdLayoutClient: React.FC<AntdLayoutClientProps> = ({ children, header })
       <Content
         style={{
           flex: 1, 
-          background: 'var(--ant-color-bg-layout)', 
+          backgroundImage: `url('/background/imjuver-pattern.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
           
         }}
       >
         <div
           style={{
             minHeight: '100%',
-            background: 'var(--ant-color-bg-container)',
           }}
         >
           {children}

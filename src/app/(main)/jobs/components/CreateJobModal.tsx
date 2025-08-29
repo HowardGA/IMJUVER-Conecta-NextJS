@@ -1,9 +1,10 @@
-import { Modal, Form, Input, DatePicker, Select, Button, message } from 'antd';
+import { Modal, Form, Input, DatePicker, Select, Button, Checkbox } from 'antd';
 import { useCreateOffer } from '@/hooks/ofertasHooks';
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '@/lib/apiClient';
 import dayjs from 'dayjs';
 import { CreateOfertaDto } from '@/interfaces/ofertaInterface';
+import { useMessage } from '@/components/providers/MessageProvider';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -21,6 +22,7 @@ interface CategoriesResponse {
 export default function CreateJobModal({ open, onCancel }: CreateJobModalProps) {
   const [form] = Form.useForm<CreateOfertaDto>();
   const createMutation = useCreateOffer();
+  const message = useMessage();
 
   const { data: categoriesResponse } = useQuery<CategoriesResponse[]>({
     queryKey: ['categories'],
@@ -36,14 +38,15 @@ export default function CreateJobModal({ open, onCancel }: CreateJobModalProps) 
         ...values,
         fecha_vigencia: dayjs(values.fecha_vigencia).format('YYYY-MM-DD'),
         activo: values.activo ?? true,
+        mujer: values.mujer
       }, {
         onSuccess: () => {
-          message.success('Job created successfully');
+          message.success('Oferta creada exitosamente');
           onCancel();
           form.resetFields();
         },
         onError: () => {
-          message.error('Error creating job');
+          message.error('Error al crear la oferta');
         }
       });
     } catch (error) {
@@ -58,20 +61,21 @@ export default function CreateJobModal({ open, onCancel }: CreateJobModalProps) 
       onCancel={onCancel}
       footer={[
         <Button key="back" onClick={onCancel}>
-          Cancel
+          Cancelar
         </Button>,
-        <Button 
-          key="submit" 
-          type="primary" 
+        <Button
+          key="submit"
+          type="primary"
           loading={createMutation.isPending}
           onClick={handleSubmit}
         >
-          Create
+          Crear
         </Button>,
       ]}
-      width={700}
+      // Ant Design Modal handles responsiveness for width automatically for smaller screens
+      // width={700} // This will be ignored on mobile, which is good.
     >
-      <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical"> {/* layout="vertical" is good for mobile */}
         <Form.Item<CreateOfertaDto>
           name="titulo"
           label="Titulo"
@@ -107,8 +111,8 @@ export default function CreateJobModal({ open, onCancel }: CreateJobModalProps) 
           label="Vencimiento"
           rules={[{ required: true, message: 'Fecha vencimiento requerida!' }]}
         >
-          <DatePicker 
-            style={{ width: '100%' }} 
+          <DatePicker
+            style={{ width: '100%' }}
             disabledDate={(current) => current && current < dayjs().startOf('day')}
             placeholder='Selecciona una fecha'
           />
@@ -123,6 +127,13 @@ export default function CreateJobModal({ open, onCancel }: CreateJobModalProps) 
             <Option value={true}>Activo</Option>
             <Option value={false}>Deshabilitado</Option>
           </Select>
+        </Form.Item>
+        <Form.Item<CreateOfertaDto>
+          name="mujer"
+          valuePropName="checked"
+          initialValue={false}
+        >
+          <Checkbox>Oferta para mujeres</Checkbox>
         </Form.Item>
       </Form>
     </Modal>

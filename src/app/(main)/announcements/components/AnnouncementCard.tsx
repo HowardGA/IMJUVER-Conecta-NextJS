@@ -8,12 +8,12 @@ const { Title } = Typography;
 interface AnnouncementCardProps {
   title: string;
   imageUrl: string;
-  eventDate: Date; 
+  eventDate?: Date; 
   onClick?: () => void;
 }
 
 const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ title, imageUrl, eventDate, onClick }) => {
-  const formattedDate = eventDate.toLocaleDateString('es-ES', {
+  const formattedDate = eventDate?.toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -22,7 +22,7 @@ const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ title, imageUrl, ev
   return (
     <Card
       hoverable
-      style={{ width: 400, overflow: 'hidden' }}
+      style={{ width: '100%', overflow: 'hidden' }}
       onClick={onClick}
       styles={{ body: {padding: 0 }}}
     >
@@ -30,7 +30,7 @@ const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ title, imageUrl, ev
         style={{
           position: 'relative',
           width: '100%',
-          height: 200,
+          height: 200, 
           backgroundImage: `url(${imageUrl})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -40,7 +40,7 @@ const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ title, imageUrl, ev
         }}
       >
         <div
-          style={{
+         style={{
             position: 'absolute',
             top: 0,
             left: 0,
@@ -52,18 +52,18 @@ const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ title, imageUrl, ev
         />
 
         <div
-          style={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            color: 'black',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            zIndex: 3,
-          }}
+            style={{
+              position: 'absolute',
+              top: 12, 
+              right: 12, 
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              color: 'black',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontSize: '11px', 
+              fontWeight: 'bold',
+              zIndex: 3,
+            }}
         >
           {formattedDate}
         </div>

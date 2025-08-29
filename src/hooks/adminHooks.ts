@@ -1,11 +1,12 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { AdminStats, UserData, UpdateUserRolePayload, RoleData } from '@/interfaces/adminInterface';
+import { AdminStats, UserData, UpdateUserRolePayload, RoleData, CreateManagerUserDto } from '@/interfaces/adminInterface';
 import { getAllUsers, getAdminStats, deleteUser, updateUserRole, getAllRoles } from '@/services/adminServices';
 import { AxiosError } from 'axios';
 import { MessageInstance } from 'antd/es/message/interface';
 import { queryClient } from '@/components/providers/QueryProvider';
+import apiClient from '@/lib/apiClient';
 
-interface UseMutationOptions<TVariables, TData = void> {
+export interface UseMutationOptions<TVariables, TData = void> {
     onSuccessCallback?: (data: TData, variables: TVariables, context: unknown) => void;
     onErrorCallback?: (error: AxiosError, variables: TVariables, context: unknown) => void;
     messageApi?: MessageInstance;
@@ -70,4 +71,15 @@ export const useGetAllRoles = () => {
         queryFn: getAllRoles,
         staleTime: Infinity,
     });
+};
+
+export const useCreateManagerUser = () => {
+  return useMutation<UserData, Error, CreateManagerUserDto>({
+    mutationFn: (newUserData) =>
+      apiClient.post('/auth/manager', newUserData).then(res => res.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allUsers'] });
+      queryClient.invalidateQueries({ queryKey: ['managerUsers'] }); 
+    },
+  });
 };

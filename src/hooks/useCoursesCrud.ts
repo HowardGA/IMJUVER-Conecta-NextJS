@@ -7,6 +7,7 @@ import {
 } from '@/services/courseCrudSerevice';
 import { message } from 'antd';
 import { useRouter } from "next/navigation";
+import { queryClient } from '@/components/providers/QueryProvider';
 
 export const useDeleteLesson = () =>{
   const router = useRouter();
@@ -15,6 +16,7 @@ export const useDeleteLesson = () =>{
     mutationKey: ['deleteLesson'],
     mutationFn: deleteLesson,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lessons'] });
       message.success('Lección eliminada con éxito');
       router.push('/courses');
     },
@@ -29,6 +31,7 @@ export const useDeleteQuiz = () =>{
     mutationKey: ['deleteQuiz'],
     mutationFn: deleteQuiz,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['quizzes'] });
       message.success('Cuestionario eliminado con éxito');
       router.push('/courses');
     },
@@ -43,6 +46,7 @@ export const useDeleteModule = () =>{
     mutationKey: ['deleteModule'],
     mutationFn: deleteModule,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['modules'] });
       message.success('Módulo eliminado con éxito');
       router.push('/courses');
     },
@@ -59,6 +63,7 @@ export const useDeleteCourse = () => {
     mutationKey: ['deleteCourse'],
     mutationFn: deleteCourse,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
       message.success('Curso eliminado con éxito');
       router.push('/courses');
     },

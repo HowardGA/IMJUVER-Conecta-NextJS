@@ -16,6 +16,7 @@ export interface Oferta {
   url?: string;
   fecha_vigencia: string;
   activo: boolean;
+  mujer: boolean;
 }
 
 export interface CreateOfertaDto {
@@ -25,6 +26,7 @@ export interface CreateOfertaDto {
   url?: string;
   fecha_vigencia: string;
   activo?: boolean;
+  mujer?: boolean;
 }
 
 export interface UpdateOfertaDto extends Partial<CreateOfertaDto> {

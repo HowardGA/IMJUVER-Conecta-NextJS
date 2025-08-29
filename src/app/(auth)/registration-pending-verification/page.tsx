@@ -44,7 +44,7 @@ const [messageApi, contextHolder] = message.useMessage();
     }
   };
 
-  return (
+ return (
     <>
     {contextHolder}
         <Layout
@@ -53,30 +53,40 @@ const [messageApi, contextHolder] = message.useMessage();
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundImage: `url('/background/login.svg')`,
+            backgroundImage: `url('/background/login.svg')`, 
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
+            backgroundAttachment: 'fixed',
+            padding: '20px', 
+            boxSizing: 'border-box', 
         }}
         >
         <Card
             variant='borderless'
             style={{
-            width: '35rem',
+            width: '100%',
+            maxWidth: '560px',
             padding: '2rem',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
             borderRadius: '8px',
             textAlign: 'center',
+            margin: '20px auto', 
+            boxSizing: 'border-box',
             }}
         >
-            <Space direction="vertical" align="center">
+            <Space
+                direction="vertical"
+                align="center"
+                style={{ width: '100%' }}
+            >
                 <Result
                     status="warning"
-                    icon={<ExclamationCircleOutlined style={{ color: '#faad14' }} />}
-                    title="Se envió el correo de verificación"
-                    subTitle="Si no te llego el correo, da click al boton de abajo"
+                    icon={<ExclamationCircleOutlined style={{ color: '#faad14', fontSize: '4em' }} />} 
+                    title={<div style={{ fontSize: '1.8em' }}>Se envió el correo de verificación</div>} 
+                    subTitle={<div style={{ fontSize: '1.1em', wordBreak: 'break-word' }}>Si no te llegó el correo, da click al botón de abajo</div>} // Responsive subtitle font size and word break
                     extra={
-                        <Button type="primary" onClick={handleResendEmail}>
+                        <Button type="primary" onClick={handleResendEmail} size="large" style={{ marginTop: '15px' }}> 
                         Reenviar Enlace
                         </Button>
                     }
