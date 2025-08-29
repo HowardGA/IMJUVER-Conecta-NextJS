@@ -10,6 +10,10 @@ import { useUser } from '../providers/UserProvider';
 import { MenuOutlined } from '@ant-design/icons'; 
 
 const { Header: AntdHeader } = Layout;
+interface MenuItem {
+    key: string;
+    label: React.ReactNode;
+}
 
 const AppHeader: React.FC = () => {
   const { currentTheme } = useTheme();
@@ -25,13 +29,17 @@ const AppHeader: React.FC = () => {
     { key: 'opinions', label: <Link href="/ideas">Propuestas</Link> },
     { key: 'profile', label: <Link href="/profile">Perfil</Link>, requiresAuth: true }
   ];
+ const filteredItems = allMenuItems.filter(item => {
+        if (item.requiresAuth && !user) {
+            return false;
+        }
+        return true;
+    });
 
-  const menuItems = allMenuItems.filter(item => {
-    if (item.requiresAuth && !user) {
-      return false;
-    }
-    return true;
-  });
+  const menuItems: MenuItem[] = filteredItems.map(item => ({
+        key: item.key,
+        label: item.label,
+    }));
 
   // Function to determine active key based on current path
   const getActiveKey = () => {

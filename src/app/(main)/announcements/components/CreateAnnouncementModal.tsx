@@ -67,7 +67,7 @@ const CreateAnnouncementModal: React.FC<CreateAnnouncementModalProps> = ({ visib
         }
       });
     }
-  }, [visible, form, imageList, resourceList]); 
+  }, [visible, form]); 
 
   const handleImageUploadChange = async (info: UploadChangeParam<UploadFile>) => {
     let newFileList = [...info.fileList]; 
